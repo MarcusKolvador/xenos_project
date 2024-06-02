@@ -49,8 +49,10 @@ end
 Sword_entity = setmetatable({}, {__index = Entity})
 Sword_entity.__index = Sword_entity
 
-function Sword_entity:new(x, y, sprite)
+function Sword_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
     local sword_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    sword_entity.hitboxWidth = hitboxWidth
+    sword_entity.hitboxHeight = hitboxHeight
     setmetatable(sword_entity, Sword_entity)
     return sword_entity
 end
@@ -59,8 +61,10 @@ end
 Player_entity = setmetatable({}, {__index = Entity})
 Player_entity.__index = Player_entity
 
-function Player_entity:new(x, y, sprite)
+function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
     local player_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    player_entity.hitboxWidth = hitboxWidth
+    player_entity.hitboxHeight = hitboxHeight
     setmetatable(player_entity, Player_entity)
     return player_entity
 end
@@ -99,12 +103,13 @@ function love.load()
     end
 
     -- Create sword entity
-    sword_entity = Sword_entity:new(100, 360, sword_sprite)
+    sword_entity = Sword_entity:new(100, 360, sword_sprite, 16, 16)
 
     -- Initialize player position to the center of the map
     updateMapSize()
     x, y = mapWidth / 2, mapHeight / 2
-    player_entity = Player_entity:new(x, y, spritesheets["front"])
+    -- Create player entity
+    player_entity = Player_entity:new(x, y, spritesheets["front"], 32, 32)
 end
 
 -- Update game state
@@ -139,13 +144,9 @@ function love.update(dt)
     
     updateDodge(dt)
 
-    print("Player Position:", player_entity.x, player_entity.y)
-    print("Sword Position:", sword_entity.x, sword_entity.y)
-
     -- picking up sword
     if isColliding(player_entity, sword_entity) then
         equipped_sword = true
-        print("COLLDING")
     end
 
     -- Constrain player within map boundaries
@@ -198,24 +199,24 @@ function love.draw()
 
     -- draws sword_entity if not equipped
     if not equipped_sword then
-        sword_entity:draw()
+        love.graphics.draw(sword_sprite, sword_entity.x - 16, sword_entity.y - 16, 0, scaleFactor/2, scaleFactor/2)
     end
     
     -- Draw player
-    love.graphics.draw(spritesheets[character], frames[character][currentFrame], x, y, 0, scaleFactor, scaleFactor)
+    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, scaleFactor, scaleFactor)
 
     -- Draw equipped sword
     if equipped_sword then
         if character ~= "right" then
-            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], x, y, 0, scaleFactor, scaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, scaleFactor, scaleFactor)
         else
-            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], x, y, 0, scaleFactor, scaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, scaleFactor, scaleFactor)
         end
     end
 
     -- Draw UI
     if not dodge_up then
-        love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], x, y, 0, scaleFactor, scaleFactor)
+        love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, scaleFactor, scaleFactor)
     end
 end
 
@@ -230,9 +231,10 @@ function updateMapSize()
 end
 
 function isColliding(a, b)
+    
     -- Update positions
-    local leftA, rightA, topA, bottomA = a.x, a.x + FRAME_WIDTH * scaleFactor, a.y, a.y + FRAME_HEIGHT * scaleFactor
-    local leftB, rightB, topB, bottomB = b.x, b.x + FRAME_WIDTH * scaleFactor, b.y, b.y + FRAME_HEIGHT * scaleFactor
+    local leftA, rightA, topA, bottomA = a.x, a.x + a.hitboxWidth * scaleFactor, a.y, a.y + a.hitboxHeight * scaleFactor
+    local leftB, rightB, topB, bottomB = b.x, b.x + b.hitboxWidth * scaleFactor, b.y, b.y + b.hitboxHeight * scaleFactor
 
     -- Check for collision
     if rightA > leftB and leftA < rightB and bottomA > topB and topA < bottomB then
