@@ -33,6 +33,8 @@ ScaleFactor = 3
 
 -- Load assets and initialize
 function love.load()
+    -- Get map size
+    mapWidth, mapHeight = love.graphics.getWidth(), love.graphics.getHeight()
     -- Load music
     backgroundMusic = love.audio.newSource("assets/demon-slayer-8687.mp3", "stream")
     love.audio.play(backgroundMusic)
@@ -65,10 +67,9 @@ function love.load()
     end
 
     -- Create sword entity
-    sword_entity = Sword_entity:new(100, 360, sword_sprite, 16, 16)
+    sword_entity = Sword_entity:new(mapWidth / 2 - mapWidth / 4, mapHeight / 2 - mapHeight / 4, sword_sprite, 16, 16)
 
     -- Initialize player position to the center of the map
-    updateMapSize()
     x, y = mapWidth / 2, mapHeight / 2
     -- Create player entity
     player_entity = Player_entity:new(x, y, spritesheets["front"], 32, 32)
@@ -99,6 +100,23 @@ function love.update(dt)
         character = "right"
         player_entity.x = player_entity.x + moveSpeed * dt
         moving = true
+    end
+
+
+    -- handle boundaries
+    local minX, minY = 0, 0
+    local maxX, maxY = love.graphics.getWidth(), love.graphics.getHeight()
+    player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
+    player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
+    if player_entity.x >= maxX then
+        local newBoing = love.audio.newSource("assets/boing.mp3", "static")
+        newBoing:play()
+        player_entity.x = maxX - 50
+    end
+    if player_entity.y >= maxY then
+        local newBoing = love.audio.newSource("assets/boing.mp3", "static")
+        newBoing:play()
+        player_entity.y = maxY - 50
     end
 
     UpdateDodge(dt)
@@ -154,14 +172,4 @@ function love.draw()
     if not Dodge_up then
         love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, ScaleFactor, ScaleFactor)
     end
-end
-
--- Handle window resizing
-function love.resize(w, h)
-    updateMapSize()
-end
-
--- Update map size based on window dimensions
-function updateMapSize()
-    mapWidth, mapHeight = love.graphics.getWidth(), love.graphics.getHeight()
 end
