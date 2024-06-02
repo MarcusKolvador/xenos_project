@@ -24,29 +24,46 @@ local character = "front"
 local dodge_length = 0.1
 local dodge_cooldown = 0
 local dodge_cooldown_period = 5
-local equipped_sword = true
+local equipped_sword = false
 
--- Entities
--- Sword_entity
-Sword_entity = {}
-Sword_entity.__index = Sword_entity
+-- Base Entity class
+Entity = {}
+Entity.__index = Entity
 
-function Sword_entity:new(x, y, sprite)
-    local sword_entity = {}
-    setmetatable(sword_entity, Sword_entity)
+function Entity:new(x, y, sprite)
+    local entity = {}
+    setmetatable(entity, Entity)
 
-    sword_entity.x = x
-    sword_entity.y = y
-    sword_entity.sprite = sprite
+    entity.x = x
+    entity.y = y
+    entity.sprite = sprite
 
-    return sword_entity
+    return entity
 end
 
-function Sword_entity:draw()
-    -- Draw the sword entity
+function Entity:draw()
     love.graphics.draw(self.sprite, self.x, self.y)
 end
 
+-- Sword entity inheriting from Entity
+Sword_entity = setmetatable({}, {__index = Entity})
+Sword_entity.__index = Sword_entity
+
+function Sword_entity:new(x, y, sprite)
+    local sword_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    setmetatable(sword_entity, Sword_entity)
+    return sword_entity
+end
+
+-- Player entity inheriting from Entity
+Player_entity = setmetatable({}, {__index = Entity})
+Player_entity.__index = Player_entity
+
+function Player_entity:new(x, y, sprite)
+    local player_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    setmetatable(player_entity, Player_entity)
+    return player_entity
+end
 
 -- Load assets and initialize
 function love.load()
@@ -71,7 +88,7 @@ function love.load()
         sword_equipped_right = love.graphics.newImage("assets/sword_equipped_right.png"),
     }
     -- Item sprites
-    sword = love.graphics.newImage("assets/sword.png")
+    sword_sprite = love.graphics.newImage("assets/sword.png")
     
     -- Read frames from sprites, assuming they're placed horizontally, at 4 frames
     for sprite, spritesheet in pairs(spritesheets) do
@@ -82,11 +99,12 @@ function love.load()
     end
 
     -- Create sword entity
-    sword_entity = Sword_entity:new(100, 360, sword)
+    sword_entity = Sword_entity:new(100, 360, sword_sprite)
 
     -- Initialize player position to the center of the map
     updateMapSize()
     x, y = mapWidth / 2, mapHeight / 2
+    player_entity = Player_entity:new(x, y, spritesheets["front"])
 end
 
 -- Update game state
@@ -98,21 +116,21 @@ function love.update(dt)
     -- Player movement logic
     if love.keyboard.isDown('s') then
         character = "front"
-        y = y + moveSpeed * dt
+        player_entity.y = player_entity.y + moveSpeed * dt
         moving = true
     elseif love.keyboard.isDown('w') then
         character = "back"
-        y = y - moveSpeed * dt
+        player_entity.y = player_entity.y - moveSpeed * dt
         moving = true
     end
 
     if love.keyboard.isDown('a') then
         character = "left"
-        x = x - moveSpeed * dt
+        player_entity.x = player_entity.x - moveSpeed * dt
         moving = true
     elseif love.keyboard.isDown('d') then
         character = "right"
-        x = x + moveSpeed * dt
+        player_entity.x = player_entity.x + moveSpeed * dt
         moving = true
     end
 
@@ -120,6 +138,15 @@ function love.update(dt)
     dodge = love.keyboard.isDown('space')
     
     updateDodge(dt)
+
+    print("Player Position:", player_entity.x, player_entity.y)
+    print("Sword Position:", sword_entity.x, sword_entity.y)
+
+    -- picking up sword
+    if isColliding(player_entity, sword_entity) then
+        equipped_sword = true
+        print("COLLDING")
+    end
 
     -- Constrain player within map boundaries
     x = math.max(0, math.min(x, mapWidth - FRAME_WIDTH * scaleFactor))
@@ -169,8 +196,10 @@ function love.draw()
         end
     end
 
-    -- draws sword_entity
-    sword_entity:draw()
+    -- draws sword_entity if not equipped
+    if not equipped_sword then
+        sword_entity:draw()
+    end
     
     -- Draw player
     love.graphics.draw(spritesheets[character], frames[character][currentFrame], x, y, 0, scaleFactor, scaleFactor)
@@ -190,7 +219,6 @@ function love.draw()
     end
 end
 
-
 -- Handle window resizing
 function love.resize(w, h)
     updateMapSize()
@@ -199,4 +227,17 @@ end
 -- Update map size based on window dimensions
 function updateMapSize()
     mapWidth, mapHeight = love.graphics.getWidth(), love.graphics.getHeight()
+end
+
+function isColliding(a, b)
+    -- Update positions
+    local leftA, rightA, topA, bottomA = a.x, a.x + FRAME_WIDTH * scaleFactor, a.y, a.y + FRAME_HEIGHT * scaleFactor
+    local leftB, rightB, topB, bottomB = b.x, b.x + FRAME_WIDTH * scaleFactor, b.y, b.y + FRAME_HEIGHT * scaleFactor
+
+    -- Check for collision
+    if rightA > leftB and leftA < rightB and bottomA > topB and topA < bottomB then
+        return true
+    else
+        return false
+    end
 end
