@@ -1,21 +1,21 @@
-dodge_button_timer = 0
-dodge_button_released = true
-dodge_length = 0.1
-dodge_cooldown = 0
-dodge_cooldown_period = 5
+local dodge_button_timer = 0
+local dodge_length = 0.1
+local dodge_cooldown = 0
+local dodge_cooldown_period = 5
 
-function updateDodge(dt)
+function UpdateDodge(dt)
+
+    -- registers the dodge input
+    Dodge = love.keyboard.isDown('space')
     -- records the time the dodge button is held
     if Dodge then
         dodge_button_timer = dodge_button_timer + dt
-        dodge_button_released = false
     else
         -- resets the ticker if dodge button released
         dodge_cooldown = math.max(0, dodge_cooldown - dt)
-        if dodge_cooldown == 0 and not dodge_button_released then
+        if dodge_cooldown == 0 and not Dodge then
             dodge_button_timer = 0
             dodge_cooldown = dodge_cooldown_period
-            dodge_button_released = trueF
         end
     end
 
