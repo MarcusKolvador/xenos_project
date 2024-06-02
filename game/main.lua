@@ -1,3 +1,10 @@
+-- Imports
+local Entity = require("entity")
+local Player_entity = Entity.Player_entity
+local Sword_entity = Entity.Sword_entity
+require("dodge")
+
+
 -- Constants
 local FRAME_WIDTH = 32
 local FRAME_HEIGHT = 32
@@ -15,59 +22,13 @@ local elapsedTime = 0
 local x, y
 local mapWidth, mapHeight
 local moving = false
-local dodge = false
-local dodge_up = false
-local dodge_button_timer = 0
-local dodge_button_released = true
 local scaleFactor = 3
 local character = "front"
-local dodge_length = 0.1
-local dodge_cooldown = 0
-local dodge_cooldown_period = 5
 local equipped_sword = false
+-- Global variables
+Dodge = false
+Dodge_up = false
 
--- Base Entity class
-Entity = {}
-Entity.__index = Entity
-
-function Entity:new(x, y, sprite)
-    local entity = {}
-    setmetatable(entity, Entity)
-
-    entity.x = x
-    entity.y = y
-    entity.sprite = sprite
-
-    return entity
-end
-
-function Entity:draw()
-    love.graphics.draw(self.sprite, self.x, self.y)
-end
-
--- Sword entity inheriting from Entity
-Sword_entity = setmetatable({}, {__index = Entity})
-Sword_entity.__index = Sword_entity
-
-function Sword_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
-    local sword_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
-    sword_entity.hitboxWidth = hitboxWidth
-    sword_entity.hitboxHeight = hitboxHeight
-    setmetatable(sword_entity, Sword_entity)
-    return sword_entity
-end
-
--- Player entity inheriting from Entity
-Player_entity = setmetatable({}, {__index = Entity})
-Player_entity.__index = Player_entity
-
-function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
-    local player_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
-    player_entity.hitboxWidth = hitboxWidth
-    player_entity.hitboxHeight = hitboxHeight
-    setmetatable(player_entity, Player_entity)
-    return player_entity
-end
 
 -- Load assets and initialize
 function love.load()
@@ -115,7 +76,7 @@ end
 -- Update game state
 function love.update(dt)
     -- set speed depending on if dodging or not
-    local moveSpeed = moving and (dodge and dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
+    local moveSpeed = moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
     moving = false
 
     -- Player movement logic
@@ -140,7 +101,7 @@ function love.update(dt)
     end
 
     -- registers the dodge input
-    dodge = love.keyboard.isDown('space')
+    Dodge = love.keyboard.isDown('space')
     
     updateDodge(dt)
 
@@ -162,29 +123,6 @@ function love.update(dt)
         end
     else
         currentFrame = 1
-    end
-end
-
-function updateDodge(dt)
-    -- records the time the dodge button is held
-    if dodge then
-        dodge_button_timer = dodge_button_timer + dt
-        dodge_button_released = false
-    else
-        -- resets the ticker if dodge button released
-        dodge_cooldown = math.max(0, dodge_cooldown - dt)
-        if dodge_cooldown == 0 and not dodge_button_released then
-            dodge_button_timer = 0
-            dodge_cooldown = dodge_cooldown_period
-            dodge_button_released = true
-        end
-    end
-
-    -- checks if dodge button was held longer than allowed and sets the dodge cooldown to false or true
-    if dodge_button_timer > dodge_length then
-        dodge_up = false
-    else
-        dodge_up = true
     end
 end
 
@@ -215,7 +153,7 @@ function love.draw()
     end
 
     -- Draw UI
-    if not dodge_up then
+    if not Dodge_up then
         love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, scaleFactor, scaleFactor)
     end
 end
