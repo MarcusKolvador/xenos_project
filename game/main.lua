@@ -5,11 +5,12 @@ local Sword_entity = Entity.Sword_entity
 require("dodge")
 require("collide")
 require("spawn_enemies")
+require("helpers")
 
 
 -- Constants
-local FRAME_WIDTH = 32
-local FRAME_HEIGHT = 32
+FRAME_WIDTH = 32
+FRAME_HEIGHT = 32
 local FRAME_COUNT = 4
 local MOVE_SPEED = {normal = 150, dodge = 700}
 local FRAME_TIME = 0.25
@@ -24,16 +25,16 @@ local elapsedTime = 0
 local x, y
 local moving = false
 local character = "front"
-local equipped_sword = false
-local player_hitbox_x = 24
-local player_hitbox_y = 30
-local sword_hitbox_x = 16
-local sword_hitbox_y = 16
-local goblin_hitbox_offset_x = 14
-local goblin_hitbox_offset_y = 33
-local player_hitbox_offset_x = 4
-local player_hitbox_offset_y = -8
-local hitbox_debug = false
+Equipped_sword = false
+Player_hitbox_x = 24
+Player_hitbox_y = 30
+Sword_hitbox_x = 16
+Sword_hitbox_y = 16
+Goblin_hitbox_offset_x = 14
+Goblin_hitbox_offset_y = 33
+Player_hitbox_offset_x = 4
+Player_hitbox_offset_y = -8
+Hitbox_debug = false
 
 -- Global variables
 Dodge = false
@@ -84,12 +85,12 @@ function love.load()
     goblin_entity = SpawnGoblin()
 
     -- Create sword entity
-    sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, sword_hitbox_x, sword_hitbox_y)
+    sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
 
     -- Initialize player position to the center of the map
     x, y = MapWidth / 2, MapHeight / 2
     -- Create player entity
-    player_entity = Player_entity:new(x, y, spritesheets["front"], player_hitbox_x, player_hitbox_y)
+    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y)
 end
 
 -- Update game state
@@ -146,7 +147,7 @@ function love.update(dt)
 
     -- picking up sword
     if isColliding(player_entity, sword_entity) then
-        equipped_sword = true
+        Equipped_sword = true
     end
 
     -- colliding with goblin
@@ -180,27 +181,27 @@ function love.draw()
     end
 
     -- draws sword_entity if not equipped
-    if not equipped_sword then
-        love.graphics.draw(sword_sprite, sword_entity.x - sword_hitbox_x, sword_entity.y - sword_hitbox_y, 0, ScaleFactor / 2, ScaleFactor / 2)
+    if not Equipped_sword then
+        love.graphics.draw(sword_sprite, sword_entity.x - Sword_hitbox_x, sword_entity.y - Sword_hitbox_y, 0, ScaleFactor / 2, ScaleFactor / 2)
     end
 
     -- Draw goblin
-    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y - goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     
     -- Draw player
-    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - player_hitbox_x - player_hitbox_offset_x, player_entity.y - player_hitbox_y - player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     
     -- Draw equipped sword
-    if equipped_sword then
+    if Equipped_sword then
         if character ~= "right" then
-            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, ScaleFactor, ScaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         else
-            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, ScaleFactor, ScaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         end
     end
 
     -- Draw hitboxes
-    if hitbox_debug == true then
+    if Hitbox_debug == true then
         debug()
     end
 
@@ -211,16 +212,3 @@ function love.draw()
 end
 
 
-function debug()
-    if not equipped_sword then
-        love.graphics.rectangle("line", sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_HEIGHT / 2, sword_hitbox_x * ScaleFactor, sword_hitbox_y * ScaleFactor)
-    end
-    love.graphics.rectangle("line", goblin_entity.x - FRAME_WIDTH / 2, goblin_entity.y  - FRAME_HEIGHT / 2, Goblin_hitbox_x * ScaleFactor, Goblin_hitbox_y * ScaleFactor)
-    love.graphics.rectangle("line", player_entity.x - FRAME_WIDTH / 2, player_entity.y - FRAME_HEIGHT / 2, player_hitbox_x * ScaleFactor, player_hitbox_y * ScaleFactor)
-end
-
-function love.keypressed(key)
-    if key == "k" then
-        hitbox_debug = not hitbox_debug
-    end
-end
