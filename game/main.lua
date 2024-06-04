@@ -154,19 +154,32 @@ function love.update(dt)
         goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
     end
 
+    -- attack logic
     if love.mouse.isDown(1) then
         moving = false
         attacking = true
 
         if Equipped_sword == true then
-            CutSound:play()
+            local cutInstance = CutSound:clone()
+            if not CutSound:play() then
+                cutInstance:play()
+            end
+        end
+        if isColliding(sword_equipped_entity, goblin_entity) then
+            local GoblinHurtInstance = GoblinHurtSound:clone()
+            if not GoblinHurtSound:play() then
+                GoblinHurtInstance:play()
+            end
+            if character == "right" then
+                goblin_entity.x = goblin_entity.x + 50
+                goblin_entity.y = goblin_entity.y + 10
+            elseif character == "left" then
+                goblin_entity.x = goblin_entity.x - 50
+                goblin_entity.y = goblin_entity.y + 10
+            end
         end
     else
         attacking = false
-    end
-
-    if isColliding(sword_equipped_entity, goblin_entity) then
-        GoblinHurtSound:play()
     end
 
 
@@ -280,5 +293,3 @@ function love.draw()
         love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     end
 end
-
-
