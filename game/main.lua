@@ -2,6 +2,7 @@
 local Entity = require("entity")
 local Player_entity = Entity.Player_entity
 local Sword_entity = Entity.Sword_entity
+local Sword_equipped_entity = Entity.Sword_equipped_entity
 require("dodge")
 require("collide")
 require("spawn_enemies")
@@ -24,6 +25,7 @@ local currentFrame = 1
 local elapsedTime = 0
 local x, y
 local moving = false
+local attacking = false
 local character = "front"
 Player_entity_movespeed = 100
 Goblin_entity_movespeed = 30
@@ -32,6 +34,11 @@ Player_hitbox_x = 24
 Player_hitbox_y = 30
 Sword_hitbox_x = 16
 Sword_hitbox_y = 16
+Sword_equipped_hitbox_x = 15
+Sword_equipped_hitbox_y = 15
+local weapon_offset_left = 40
+local weapon_offset_right = 37
+local weapon_offset_vertical = -15
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
@@ -55,6 +62,11 @@ function love.load()
     backgroundMusic = love.audio.newSource("assets/demon-slayer-8687.mp3", "stream")
     love.audio.play(backgroundMusic)
     backgroundMusic:setLooping(true)
+
+    -- Load sounds
+    CutSound = love.audio.newSource("assets/cut_sound.mp3", "static")
+    Character_hurt = love.audio.newSource("assets/character_ouch.mp3", "static")
+    GoblinHurtSound = love.audio.newSource("assets/goblin_hurt_sound.mp3", "static")
 
     -- Load images
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -97,6 +109,9 @@ function love.load()
     x, y = MapWidth / 2, MapHeight / 2
     -- Create player entity
     player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
+
+    -- Create equipped sword entity and locate it in border of map
+    sword_equipped_entity = Sword_equipped_entity:new(0, 0, spritesheets["sword_equipped"], 0, 0)
 end
 
 -- Update game state
@@ -139,9 +154,19 @@ function love.update(dt)
         goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
     end
 
-    -- Player attack logic
     if love.mouse.isDown(1) then
-        sword_equipped = "attack_front"
+        moving = false
+        attacking = true
+
+        if Equipped_sword == true then
+            CutSound:play()
+        end
+    else
+        attacking = false
+    end
+
+    if isColliding(sword_equipped_entity, goblin_entity) then
+        GoblinHurtSound:play()
     end
 
 
@@ -173,10 +198,28 @@ function love.update(dt)
     if isColliding(player_entity, sword_entity) then
         Equipped_sword = true
     end
+    if Equipped_sword then
+        sword_entity.hitboxHeight = 0
+        sword_entity.hitboxWidth = 0
+    end
+
+    if Equipped_sword and attacking then
+        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
+        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
+        sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+        if character ~= "right" then
+        sword_equipped_entity.x = player_entity.x - weapon_offset_left
+        else
+            sword_equipped_entity.x = player_entity.x + weapon_offset_right
+        end
+    else
+        sword_equipped_entity.hitboxHeight = 0
+        sword_equipped_entity.hitboxWidth = 0
+    end
 
     -- colliding with goblin
     if isColliding(player_entity, goblin_entity) then
-        newBoing:play()
+        Character_hurt:play()
     end
 
     -- Constrain player within map boundaries

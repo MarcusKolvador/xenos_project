@@ -28,6 +28,17 @@ function Sword_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
     return sword_entity
 end
 
+-- Sword equipped entity
+local Sword_equipped_entity = setmetatable({}, { __index = Entity })
+
+function Sword_equipped_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
+    local sword_equipped_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    sword_equipped_entity.hitboxWidth = hitboxWidth
+    sword_equipped_entity.hitboxHeight = hitboxHeight
+    setmetatable(sword_equipped_entity, Sword_equipped_entity)
+    return sword_equipped_entity
+end
+
 -- Player entity inheriting from Entity
 local Player_entity = setmetatable({}, { __index = Entity })
 
@@ -56,5 +67,6 @@ return {
     Entity = Entity,
     Sword_entity = Sword_entity,
     Player_entity = Player_entity,
-    Goblin_entity = Goblin_entity
+    Goblin_entity = Goblin_entity,
+    Sword_equipped_entity = Sword_equipped_entity
 }
