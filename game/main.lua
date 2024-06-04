@@ -139,6 +139,11 @@ function love.update(dt)
         goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
     end
 
+    -- Player attack logic
+    if love.mouse.isDown(1) then
+        sword_equipped = "attack_front"
+    end
+
 
     -- handle boundaries
     local minX, minY = 0, 0
@@ -205,19 +210,20 @@ function love.draw()
     end
 
     -- Draw goblin
-    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
+    - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     
     -- Draw player
-    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
-    
+    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+    - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     -- Draw equipped sword
     if Equipped_sword then
         if character ~= "right" then
-            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x
+            - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         else
-Sword_equipped_offset_right_x = 1
-Sword_equipped_offset_right_x = 1
-            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x - sword_equipped_offset_right_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - Player_hitbox_x
+            - Player_hitbox_offset_x - sword_equipped_offset_right_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         end
     end
 
