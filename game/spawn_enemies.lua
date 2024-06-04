@@ -13,6 +13,6 @@ function SpawnGoblin()
         goblin_y = math.random(0, MapHeight - 50)
     until not (goblin_x >= middle_x_min and goblin_x <= middle_x_max and goblin_y >= middle_y_min and goblin_y <= middle_y_max)
 
-    goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y)
+    goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed)
     return goblin_entity
 end

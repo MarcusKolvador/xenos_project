@@ -25,6 +25,8 @@ local elapsedTime = 0
 local x, y
 local moving = false
 local character = "front"
+Player_entity_movespeed = 100
+Goblin_entity_movespeed = 30
 Equipped_sword = false
 Player_hitbox_x = 24
 Player_hitbox_y = 30
@@ -34,6 +36,8 @@ Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
+local sword_equipped_offset_left_x = 10
+local sword_equipped_offset_right_x = -11
 Hitbox_debug = false
 
 -- Global variables
@@ -61,6 +65,8 @@ function love.load()
         right = love.graphics.newImage("assets/avatar_right.png"),
         back = love.graphics.newImage("assets/avatar_back.png"),
         front = love.graphics.newImage("assets/avatar_front.png"),
+        -- Character attacks
+        attack_front = love.graphics.newImage("assets/attack_front.png"),
         -- Character status effects
         dodge_ui = love.graphics.newImage("assets/dodge.png"),
         -- Weapon equipped sprites
@@ -90,34 +96,47 @@ function love.load()
     -- Initialize player position to the center of the map
     x, y = MapWidth / 2, MapHeight / 2
     -- Create player entity
-    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y)
+    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
 end
 
 -- Update game state
 function love.update(dt)
     -- set speed depending on if dodging or not
-    local moveSpeed = moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
+    player_entity.movespeed = moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
     moving = false
 
     -- Player movement logic
     if love.keyboard.isDown('s') then
         character = "front"
-        player_entity.y = player_entity.y + moveSpeed * dt
+        player_entity.y = player_entity.y + player_entity.movespeed * dt
         moving = true
     elseif love.keyboard.isDown('w') then
         character = "back"
-        player_entity.y = player_entity.y - moveSpeed * dt
+        player_entity.y = player_entity.y - player_entity.movespeed * dt
         moving = true
     end
 
     if love.keyboard.isDown('a') then
         character = "left"
-        player_entity.x = player_entity.x - moveSpeed * dt
+        player_entity.x = player_entity.x - player_entity.movespeed * dt
         moving = true
     elseif love.keyboard.isDown('d') then
         character = "right"
-        player_entity.x = player_entity.x + moveSpeed * dt
+        player_entity.x = player_entity.x + player_entity.movespeed * dt
         moving = true
+    end
+
+    -- Goblin movement logic
+    if goblin_entity.x > player_entity.x then
+        goblin_entity.x = goblin_entity.x - goblin_entity.movespeed * dt
+    elseif goblin_entity.x < player_entity.x then
+        goblin_entity.x = goblin_entity.x + goblin_entity.movespeed * dt
+    end
+
+    if goblin_entity.y > player_entity.y then
+        goblin_entity.y = goblin_entity.y - goblin_entity.movespeed * dt
+    elseif goblin_entity.y < player_entity.y then
+        goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
     end
 
 
@@ -194,9 +213,11 @@ function love.draw()
     -- Draw equipped sword
     if Equipped_sword then
         if character ~= "right" then
-            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         else
-            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+Sword_equipped_offset_right_x = 1
+Sword_equipped_offset_right_x = 1
+            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x - sword_equipped_offset_right_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         end
     end
 
@@ -207,7 +228,7 @@ function love.draw()
 
     -- Draw UI
     if not Dodge_up then
-        love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - 16, player_entity.y - 16, 0, ScaleFactor, ScaleFactor)
+        love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     end
 end
 

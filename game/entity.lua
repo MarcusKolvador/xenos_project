@@ -31,20 +31,22 @@ end
 -- Player entity inheriting from Entity
 local Player_entity = setmetatable({}, { __index = Entity })
 
-function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
+function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed)
     local player_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     player_entity.hitboxWidth = hitboxWidth
     player_entity.hitboxHeight = hitboxHeight
+    player_entity.movespeed = movespeed
     setmetatable(player_entity, Player_entity)
     return player_entity
 end
 
 local Goblin_entity = setmetatable({}, { __index = Entity })
 
-function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
+function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed)
     local goblin_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     goblin_entity.hitboxWidth = hitboxWidth
     goblin_entity.hitboxHeight = hitboxHeight
+    goblin_entity.movespeed = movespeed
     setmetatable(goblin_entity, Goblin_entity)
     return goblin_entity
 end
