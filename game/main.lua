@@ -63,7 +63,6 @@ function love.load()
     backgroundMusic = love.audio.newSource("assets/demon-slayer-8687.mp3", "stream")
     love.audio.play(backgroundMusic)
     backgroundMusic:setLooping(true)
-
     -- Load sounds
     CutSound = love.audio.newSource("assets/cut_sound.mp3", "static")
     Character_hurt = love.audio.newSource("assets/character_ouch.mp3", "static")
@@ -88,10 +87,8 @@ function love.load()
     }
     -- Item sprites
     sword_sprite = love.graphics.newImage("assets/sword.png")
-
     -- Enemies
     goblin_sprite = love.graphics.newImage("assets/goblin.png")
-    
     -- Read frames from sprites, assuming they're placed horizontally, at 4 frames
     for sprite, spritesheet in pairs(spritesheets) do
         frames[sprite] = {}
@@ -100,19 +97,14 @@ function love.load()
         end
     end
 
-    -- Create goblin entity
-    goblin_entity = SpawnGoblin()
-
-    -- Create sword entity
-    sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
-
-    -- Initialize player position to the center of the map
+    -- Initialize the center of the map
     x, y = MapWidth / 2, MapHeight / 2
-    -- Create player entity
-    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
 
-    -- Create equipped sword entity and locate it in border of map
-    sword_equipped_entity = Sword_equipped_entity:new(0, 0, spritesheets["sword_equipped"], 0, 0)
+    -- Entities
+    goblin_entity = SpawnGoblin()
+    sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
+    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
+    sword_equipped_entity = Sword_equipped_entity:new(0, 0, spritesheets["sword_equipped"], 0, 0)  -- 0 hitbox as it is not yet equipped
 end
 
 -- Update game state
@@ -122,73 +114,13 @@ function love.update(dt)
     moving = false
 
     -- Player movement logic
-    if love.keyboard.isDown('s') then
-        character = "front"
-        player_entity.y = player_entity.y + player_entity.movespeed * dt
-        moving = true
-    elseif love.keyboard.isDown('w') then
-        character = "back"
-        player_entity.y = player_entity.y - player_entity.movespeed * dt
-        moving = true
-    end
-
-    if love.keyboard.isDown('a') then
-        character = "left"
-        player_entity.x = player_entity.x - player_entity.movespeed * dt
-        moving = true
-    elseif love.keyboard.isDown('d') then
-        character = "right"
-        player_entity.x = player_entity.x + player_entity.movespeed * dt
-        moving = true
-    end
+    Player_movement(dt)
 
     -- Goblin movement logic
-    if goblin_entity.x > player_entity.x then
-        goblin_entity.x = goblin_entity.x - goblin_entity.movespeed * dt
-    elseif goblin_entity.x < player_entity.x then
-        goblin_entity.x = goblin_entity.x + goblin_entity.movespeed * dt
-    end
-
-    if goblin_entity.y > player_entity.y then
-        goblin_entity.y = goblin_entity.y - goblin_entity.movespeed * dt
-    elseif goblin_entity.y < player_entity.y then
-        goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
-    end
+    Goblin_move(dt)
 
     -- attack logic
-    if love.mouse.isDown(1) then
-        moving = false
-        attacking = true
-
-        if Equipped_sword == true then
-            local cutInstance = CutSound:clone()
-            if not CutSound:play() then
-                cutInstance:play()
-            end
-        end
-        if isColliding(sword_equipped_entity, goblin_entity) then
-            local GoblinHurtInstance = GoblinHurtSound:clone()
-            if not GoblinHurtSound:play() then
-                GoblinHurtInstance:play()
-            end
-            if character == "right" then
-                goblin_entity.x = goblin_entity.x + 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif character == "left" then
-                goblin_entity.x = goblin_entity.x - 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif character == "front" then
-                goblin_entity.x = goblin_entity.x + 10
-                goblin_entity.y = goblin_entity.y + 50
-            elseif character == "back" then
-                goblin_entity.x = goblin_entity.x - 10
-                goblin_entity.y = goblin_entity.y - 50
-            end
-        end
-    else
-        attacking = false
-    end
-
+    Attack_logic()
 
     -- handle boundaries
     local minX, minY = 0, 0
@@ -196,7 +128,6 @@ function love.update(dt)
     local newBoing = love.audio.newSource("assets/boing.mp3", "static")
     player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
     player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
-
     if player_entity.x >= maxX then
         newBoing:play()
         player_entity.x = maxX - 20
@@ -305,5 +236,73 @@ function love.draw()
     -- Draw UI
     if not Dodge_up then
         love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    end
+end
+
+function Player_movement(dt)
+    if love.keyboard.isDown('s') then
+        character = "front"
+        player_entity.y = player_entity.y + player_entity.movespeed * dt
+        moving = true
+    elseif love.keyboard.isDown('w') then
+        character = "back"
+        player_entity.y = player_entity.y - player_entity.movespeed * dt
+        moving = true
+    end
+    if love.keyboard.isDown('a') then
+        character = "left"
+        player_entity.x = player_entity.x - player_entity.movespeed * dt
+        moving = true
+    elseif love.keyboard.isDown('d') then
+        character = "right"
+        player_entity.x = player_entity.x + player_entity.movespeed * dt
+        moving = true
+    end
+end
+
+function Goblin_move(dt)
+    if goblin_entity.x > player_entity.x then
+        goblin_entity.x = goblin_entity.x - goblin_entity.movespeed * dt
+    elseif goblin_entity.x < player_entity.x then
+        goblin_entity.x = goblin_entity.x + goblin_entity.movespeed * dt
+    end
+    if goblin_entity.y > player_entity.y then
+        goblin_entity.y = goblin_entity.y - goblin_entity.movespeed * dt
+    elseif goblin_entity.y < player_entity.y then
+        goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
+    end
+end
+
+function Attack_logic()
+    if love.mouse.isDown(1) then
+        moving = false
+        attacking = true
+        if Equipped_sword == true then
+            local cutInstance = CutSound:clone()
+            if not CutSound:play() then
+                cutInstance:play()
+            end
+        end
+        if isColliding(sword_equipped_entity, goblin_entity) then
+            local GoblinHurtInstance = GoblinHurtSound:clone()
+            if not GoblinHurtSound:play() then
+                GoblinHurtInstance:play()
+            end
+            if character == "right" then
+                goblin_entity.x = goblin_entity.x + 50
+                goblin_entity.y = goblin_entity.y + 10
+            elseif character == "left" then
+                goblin_entity.x = goblin_entity.x - 50
+                goblin_entity.y = goblin_entity.y + 10
+            elseif character == "front" then
+                goblin_entity.x = goblin_entity.x + 10
+                goblin_entity.y = goblin_entity.y + 50
+            elseif character == "back" then
+                goblin_entity.x = goblin_entity.x - 10
+                goblin_entity.y = goblin_entity.y - 50
+            end
+        end
+    else
+        attacking = false
     end
 end
