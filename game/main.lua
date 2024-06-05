@@ -38,13 +38,13 @@ Sword_equipped_hitbox_x = 15
 Sword_equipped_hitbox_y = 15
 local weapon_offset_left = 40
 local weapon_offset_right = 37
-local weapon_offset_vertical = -15
+local weapon_offset_vertical = - 15
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
 local sword_equipped_offset_left_x = 10
-local sword_equipped_offset_right_x = -11
+local sword_equipped_offset_right_x = - 11
 Hitbox_debug = false
 
 -- Global variables
