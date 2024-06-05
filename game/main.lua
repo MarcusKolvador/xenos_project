@@ -7,15 +7,12 @@ require("dodge")
 require("collide")
 require("spawn_enemies")
 require("helpers")
-
-
 -- Constants
 FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
 local FRAME_COUNT = 4
 local MOVE_SPEED = {normal = 150, dodge = 700}
 local FRAME_TIME = 0.25
-
 -- Variables
 local backgroundMusic
 local background
@@ -27,33 +24,37 @@ local x, y
 local moving = false
 local attacking = false
 local character = "front"
-Player_entity_movespeed = 100
-Goblin_entity_movespeed = 30
-Equipped_sword = false
+-- hitboxes
 Player_hitbox_x = 24
 Player_hitbox_y = 30
 Sword_hitbox_x = 16
 Sword_hitbox_y = 16
 Sword_equipped_hitbox_x = 15
 Sword_equipped_hitbox_y = 15
+-- weapon hitbox offsets
 local weapon_offset_left = 40
 local weapon_offset_right = 37
+local weapon_offset_front = 50
+local weapon_offset_back = -40
 local weapon_offset_vertical = - 15
+-- model offsets in regard to entity
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
 local sword_equipped_offset_left_x = 10
 local sword_equipped_offset_right_x = - 11
-Hitbox_debug = false
-
 -- Global variables
+Hitbox_debug = false
 Dodge = false
 Dodge_up = false
 ScaleFactor = 3
 MapWidth, MapHeight = love.graphics.getWidth(), love.graphics.getHeight()
 Goblin_hitbox_x = 20
 Goblin_hitbox_y = 20
+Player_entity_movespeed = 100
+Goblin_entity_movespeed = 30
+Equipped_sword = false
 
 
 -- Load assets and initialize
@@ -176,6 +177,12 @@ function love.update(dt)
             elseif character == "left" then
                 goblin_entity.x = goblin_entity.x - 50
                 goblin_entity.y = goblin_entity.y + 10
+            elseif character == "front" then
+                goblin_entity.x = goblin_entity.x + 10
+                goblin_entity.y = goblin_entity.y + 50
+            elseif character == "back" then
+                goblin_entity.x = goblin_entity.x - 10
+                goblin_entity.y = goblin_entity.y - 50
             end
         end
     else
@@ -219,11 +226,18 @@ function love.update(dt)
     if Equipped_sword and attacking then
         sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
         sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
-        sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
-        if character ~= "right" then
-        sword_equipped_entity.x = player_entity.x - weapon_offset_left
-        else
+        if character == "left" then
+            sword_equipped_entity.x = player_entity.x - weapon_offset_left
+            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+        elseif character == "right" then
             sword_equipped_entity.x = player_entity.x + weapon_offset_right
+            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+        elseif character == "front" then
+            sword_equipped_entity.y = player_entity.y + weapon_offset_front
+            sword_equipped_entity.x = player_entity.x
+        elseif character == "back" then
+            sword_equipped_entity.y = player_entity.y + weapon_offset_back
+            sword_equipped_entity.x = player_entity.x
         end
     else
         sword_equipped_entity.hitboxHeight = 0
