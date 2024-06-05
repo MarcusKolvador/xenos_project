@@ -3,7 +3,7 @@ local Entity = require("entity")
 local Player_entity = Entity.Player_entity
 local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
-require("dodge")
+require("player_behavior")
 require("collide")
 require("spawn_enemies")
 require("helpers")
@@ -21,9 +21,8 @@ local frames = {}
 local currentFrame = 1
 local elapsedTime = 0
 local x, y
-local moving = false
-local attacking = false
-local character = "front"
+Moving = false
+Character = "front"
 -- hitboxes
 Player_hitbox_x = 24
 Player_hitbox_y = 30
@@ -31,12 +30,6 @@ Sword_hitbox_x = 16
 Sword_hitbox_y = 16
 Sword_equipped_hitbox_x = 15
 Sword_equipped_hitbox_y = 15
--- weapon hitbox offsets
-local weapon_offset_left = 40
-local weapon_offset_right = 37
-local weapon_offset_front = 50
-local weapon_offset_back = -40
-local weapon_offset_vertical = - 15
 -- model offsets in regard to entity
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
@@ -110,8 +103,8 @@ end
 -- Update game state
 function love.update(dt)
     -- set speed depending on if dodging or not
-    player_entity.movespeed = moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
-    moving = false
+    player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
+    Moving = false
     -- Constrain player within map boundaries
     x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
     y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
@@ -163,11 +156,11 @@ function love.draw()
     - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     
     -- Draw player
-    love.graphics.draw(spritesheets[character], frames[character][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+    love.graphics.draw(spritesheets[Character], frames[Character][currentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
     - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     -- Draw equipped sword
     if Equipped_sword then
-        if character ~= "right" then
+        if Character~= "right" then
             love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][currentFrame], player_entity.x - Player_hitbox_x
             - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
         else
@@ -187,27 +180,10 @@ function love.draw()
     end
 end
 
+-----------------------------------------------------------------------------
 -- Called on functions
-function Player_movement(dt)
-    if love.keyboard.isDown('s') then
-        character = "front"
-        player_entity.y = player_entity.y + player_entity.movespeed * dt
-        moving = true
-    elseif love.keyboard.isDown('w') then
-        character = "back"
-        player_entity.y = player_entity.y - player_entity.movespeed * dt
-        moving = true
-    end
-    if love.keyboard.isDown('a') then
-        character = "left"
-        player_entity.x = player_entity.x - player_entity.movespeed * dt
-        moving = true
-    elseif love.keyboard.isDown('d') then
-        character = "right"
-        player_entity.x = player_entity.x + player_entity.movespeed * dt
-        moving = true
-    end
-end
+-----------------------------------------------------------------------------
+
 
 function Goblin_move(dt)
     if goblin_entity.x > player_entity.x then
@@ -222,103 +198,8 @@ function Goblin_move(dt)
     end
 end
 
-function Attack_logic()
-    if love.mouse.isDown(1) then
-        moving = false
-        attacking = true
-        if Equipped_sword == true then
-            local cutInstance = CutSound:clone()
-            if not CutSound:play() then
-                cutInstance:play()
-            end
-        end
-        if isColliding(sword_equipped_entity, goblin_entity) then
-            local GoblinHurtInstance = GoblinHurtSound:clone()
-            if not GoblinHurtSound:play() then
-                GoblinHurtInstance:play()
-            end
-            if character == "right" then
-                goblin_entity.x = goblin_entity.x + 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif character == "left" then
-                goblin_entity.x = goblin_entity.x - 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif character == "front" then
-                goblin_entity.x = goblin_entity.x + 10
-                goblin_entity.y = goblin_entity.y + 50
-            elseif character == "back" then
-                goblin_entity.x = goblin_entity.x + 10
-                goblin_entity.y = goblin_entity.y - 50
-            end
-        end
-    else
-        attacking = false
-    end
-end
-
-function Boundary_handler()
-    local minX, minY = 0, 0
-    local maxX, maxY = love.graphics.getWidth(), love.graphics.getHeight()
-    local newBoing = love.audio.newSource("assets/boing.mp3", "static")
-    player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
-    player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
-    if player_entity.x >= maxX then
-        newBoing:play()
-        player_entity.x = maxX - 20
-    elseif player_entity.x <= minX then
-        newBoing:play()
-        player_entity.x = minX + 20
-    end
-    if player_entity.y >= maxY then
-        newBoing:play()
-        player_entity.y = maxY - 20
-    elseif player_entity.y <= minY then
-        newBoing:play()
-        player_entity.y = minY + 20
-    end
-end
-
-function Attacking_hitbox_handler()
-    if Equipped_sword and attacking then
-        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
-        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
-        if character == "left" then
-            sword_equipped_entity.x = player_entity.x - weapon_offset_left
-            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
-        elseif character == "right" then
-            sword_equipped_entity.x = player_entity.x + weapon_offset_right
-            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
-        elseif character == "front" then
-            sword_equipped_entity.y = player_entity.y + weapon_offset_front
-            sword_equipped_entity.x = player_entity.x
-        elseif character == "back" then
-            sword_equipped_entity.y = player_entity.y + weapon_offset_back
-            sword_equipped_entity.x = player_entity.x
-        end
-    else
-        sword_equipped_entity.hitboxHeight = 0
-        sword_equipped_entity.hitboxWidth = 0
-    end
-end
-
-function Pick_up_sword()
-    if isColliding(player_entity, sword_entity) then
-        Equipped_sword = true
-    end
-    if Equipped_sword then
-        sword_entity.hitboxHeight = 0
-        sword_entity.hitboxWidth = 0
-    end
-end
-
-function Player_touches_goblin()
-    if isColliding(player_entity, goblin_entity) then
-        Character_hurt:play()
-    end
-end
-
 function Animation_updater(dt)
-    if moving then
+    if Moving then
         elapsedTime = elapsedTime + dt
         if elapsedTime >= FRAME_TIME then
             elapsedTime = elapsedTime - FRAME_TIME
