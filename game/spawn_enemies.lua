@@ -16,3 +16,16 @@ function SpawnGoblin()
     goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed)
     return goblin_entity
 end
+
+function Goblin_move(dt)
+    if goblin_entity.x > player_entity.x then
+        goblin_entity.x = goblin_entity.x - goblin_entity.movespeed * dt
+    elseif goblin_entity.x < player_entity.x then
+        goblin_entity.x = goblin_entity.x + goblin_entity.movespeed * dt
+    end
+    if goblin_entity.y > player_entity.y then
+        goblin_entity.y = goblin_entity.y - goblin_entity.movespeed * dt
+    elseif goblin_entity.y < player_entity.y then
+        goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
+    end
+end

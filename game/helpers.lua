@@ -1,3 +1,6 @@
+local elapsedTime = 0
+local FRAME_TIME = 0.25
+
 function debug()
     love.graphics.rectangle("line", sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_HEIGHT / 2, sword_entity.hitboxWidth * ScaleFactor, sword_entity.hitboxHeight * ScaleFactor)
     love.graphics.rectangle("line", sword_equipped_entity.x, sword_equipped_entity.y, sword_equipped_entity.hitboxWidth * ScaleFactor, sword_equipped_entity.hitboxHeight * ScaleFactor)
@@ -30,5 +33,17 @@ function Boundary_handler()
     elseif player_entity.y <= minY then
         newBoing:play()
         player_entity.y = minY + 20
+    end
+end
+
+function Animation_updater(dt)
+    if Moving then
+        elapsedTime = elapsedTime + dt
+        if elapsedTime >= FRAME_TIME then
+            elapsedTime = elapsedTime - FRAME_TIME
+            CurrentFrame = (CurrentFrame % FRAME_COUNT) + 1
+        end
+    else
+        CurrentFrame = 1
     end
 end
