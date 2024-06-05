@@ -3,7 +3,7 @@ local dodge_length = 0.1
 local dodge_cooldown = 0
 local dodge_cooldown_period = 5
 
-function UpdateDodge(dt)
+function Update_dodge(dt)
 
     -- registers the dodge input
     Dodge = love.keyboard.isDown('space')

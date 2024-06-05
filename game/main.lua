@@ -112,6 +112,9 @@ function love.update(dt)
     -- set speed depending on if dodging or not
     player_entity.movespeed = moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
     moving = false
+    -- Constrain player within map boundaries
+    x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
+    y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
 
     -- Player movement logic
     Player_movement(dt)
@@ -123,77 +126,22 @@ function love.update(dt)
     Attack_logic()
 
     -- handle boundaries
-    local minX, minY = 0, 0
-    local maxX, maxY = love.graphics.getWidth(), love.graphics.getHeight()
-    local newBoing = love.audio.newSource("assets/boing.mp3", "static")
-    player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
-    player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
-    if player_entity.x >= maxX then
-        newBoing:play()
-        player_entity.x = maxX - 20
-    elseif player_entity.x <= minX then
-        newBoing:play()
-        player_entity.x = minX + 20
-    end
-    if player_entity.y >= maxY then
-        newBoing:play()
-        player_entity.y = maxY - 20
-    elseif player_entity.y <= minY then
-        newBoing:play()
-        player_entity.y = minY + 20
-    end
+    Boundary_handler()
 
-    UpdateDodge(dt)
+    -- Dodge handling
+    Update_dodge(dt)
 
     -- picking up sword
-    if isColliding(player_entity, sword_entity) then
-        Equipped_sword = true
-    end
-    if Equipped_sword then
-        sword_entity.hitboxHeight = 0
-        sword_entity.hitboxWidth = 0
-    end
+    Pick_up_sword()
 
-    if Equipped_sword and attacking then
-        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
-        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
-        if character == "left" then
-            sword_equipped_entity.x = player_entity.x - weapon_offset_left
-            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
-        elseif character == "right" then
-            sword_equipped_entity.x = player_entity.x + weapon_offset_right
-            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
-        elseif character == "front" then
-            sword_equipped_entity.y = player_entity.y + weapon_offset_front
-            sword_equipped_entity.x = player_entity.x
-        elseif character == "back" then
-            sword_equipped_entity.y = player_entity.y + weapon_offset_back
-            sword_equipped_entity.x = player_entity.x
-        end
-    else
-        sword_equipped_entity.hitboxHeight = 0
-        sword_equipped_entity.hitboxWidth = 0
-    end
+    -- Attack_logic
+    Attacking_hitbox_handler()
 
-    -- colliding with goblin
-    if isColliding(player_entity, goblin_entity) then
-        Character_hurt:play()
-    end
-
-    -- Constrain player within map boundaries
-    x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
-    y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
+    -- Effects for player touching goblin
+    Player_touches_goblin()
 
     -- Update animation
-    if moving then
-        elapsedTime = elapsedTime + dt
-        if elapsedTime >= FRAME_TIME then
-            elapsedTime = elapsedTime - FRAME_TIME
-            currentFrame = (currentFrame % FRAME_COUNT) + 1
-        end
-    else
-        currentFrame = 1
-    end
+    Animation_updater(dt)
 end
 
 -- Render the game
@@ -239,6 +187,7 @@ function love.draw()
     end
 end
 
+-- Called on functions
 function Player_movement(dt)
     if love.keyboard.isDown('s') then
         character = "front"
@@ -298,11 +247,84 @@ function Attack_logic()
                 goblin_entity.x = goblin_entity.x + 10
                 goblin_entity.y = goblin_entity.y + 50
             elseif character == "back" then
-                goblin_entity.x = goblin_entity.x - 10
+                goblin_entity.x = goblin_entity.x + 10
                 goblin_entity.y = goblin_entity.y - 50
             end
         end
     else
         attacking = false
+    end
+end
+
+function Boundary_handler()
+    local minX, minY = 0, 0
+    local maxX, maxY = love.graphics.getWidth(), love.graphics.getHeight()
+    local newBoing = love.audio.newSource("assets/boing.mp3", "static")
+    player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
+    player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
+    if player_entity.x >= maxX then
+        newBoing:play()
+        player_entity.x = maxX - 20
+    elseif player_entity.x <= minX then
+        newBoing:play()
+        player_entity.x = minX + 20
+    end
+    if player_entity.y >= maxY then
+        newBoing:play()
+        player_entity.y = maxY - 20
+    elseif player_entity.y <= minY then
+        newBoing:play()
+        player_entity.y = minY + 20
+    end
+end
+
+function Attacking_hitbox_handler()
+    if Equipped_sword and attacking then
+        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
+        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
+        if character == "left" then
+            sword_equipped_entity.x = player_entity.x - weapon_offset_left
+            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+        elseif character == "right" then
+            sword_equipped_entity.x = player_entity.x + weapon_offset_right
+            sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+        elseif character == "front" then
+            sword_equipped_entity.y = player_entity.y + weapon_offset_front
+            sword_equipped_entity.x = player_entity.x
+        elseif character == "back" then
+            sword_equipped_entity.y = player_entity.y + weapon_offset_back
+            sword_equipped_entity.x = player_entity.x
+        end
+    else
+        sword_equipped_entity.hitboxHeight = 0
+        sword_equipped_entity.hitboxWidth = 0
+    end
+end
+
+function Pick_up_sword()
+    if isColliding(player_entity, sword_entity) then
+        Equipped_sword = true
+    end
+    if Equipped_sword then
+        sword_entity.hitboxHeight = 0
+        sword_entity.hitboxWidth = 0
+    end
+end
+
+function Player_touches_goblin()
+    if isColliding(player_entity, goblin_entity) then
+        Character_hurt:play()
+    end
+end
+
+function Animation_updater(dt)
+    if moving then
+        elapsedTime = elapsedTime + dt
+        if elapsedTime >= FRAME_TIME then
+            elapsedTime = elapsedTime - FRAME_TIME
+            currentFrame = (currentFrame % FRAME_COUNT) + 1
+        end
+    else
+        currentFrame = 1
     end
 end
