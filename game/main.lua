@@ -7,16 +7,16 @@ require("player_behavior")
 require("collide")
 require("spawn_enemies")
 require("helpers")
+require("audio")
+require("images")
 -- Constants
 FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
 FRAME_COUNT = 4
 local MOVE_SPEED = {normal = 150, dodge = 700}
 -- Variables
-local backgroundMusic
-local background
-local spritesheets = {}
-local frames = {}
+spritesheets = {}
+frames = {}
 local x, y
 Moving = false
 Character = "front"
@@ -50,48 +50,11 @@ Equipped_sword = false
 
 -- Load assets and initialize
 function love.load()
-    -- Load music
-    backgroundMusic = love.audio.newSource("assets/demon-slayer-8687.mp3", "stream")
-    love.audio.play(backgroundMusic)
-    backgroundMusic:setLooping(true)
-    -- Load sounds
-    CutSound = love.audio.newSource("assets/cut_sound.mp3", "static")
-    Character_hurt = love.audio.newSource("assets/character_ouch.mp3", "static")
-    GoblinHurtSound = love.audio.newSource("assets/goblin_hurt_sound.mp3", "static")
-
-    -- Load images
-    love.graphics.setDefaultFilter('nearest', 'nearest')
-    background = love.graphics.newImage("assets/grass.png")
-    spritesheets = {
-        -- Character sprites
-        left = love.graphics.newImage("assets/avatar_left.png"),
-        right = love.graphics.newImage("assets/avatar_right.png"),
-        back = love.graphics.newImage("assets/avatar_back.png"),
-        front = love.graphics.newImage("assets/avatar_front.png"),
-        -- Character attacks
-        attack_front = love.graphics.newImage("assets/attack_front.png"),
-        -- Character status effects
-        dodge_ui = love.graphics.newImage("assets/dodge.png"),
-        -- Weapon equipped sprites
-        sword_equipped = love.graphics.newImage("assets/sword_equipped.png"),
-        sword_equipped_right = love.graphics.newImage("assets/sword_equipped_right.png"),
-    }
-    -- Item sprites
-    sword_sprite = love.graphics.newImage("assets/sword.png")
-    -- Enemies
-    goblin_sprite = love.graphics.newImage("assets/goblin.png")
-    -- Read frames from sprites, assuming they're placed horizontally, at 4 frames
-    for sprite, spritesheet in pairs(spritesheets) do
-        frames[sprite] = {}
-        for i = 0, FRAME_COUNT - 1 do
-            table.insert(frames[sprite], love.graphics.newQuad(i * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT, spritesheet:getDimensions()))
-        end
-    end
-
+    Load_sounds()
+    Load_images()
     -- Initialize the center of the map
     x, y = MapWidth / 2, MapHeight / 2
-
-    -- Entities
+    -- Initialize entities
     goblin_entity = SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
     player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
@@ -109,28 +72,20 @@ function love.update(dt)
 
     -- Player movement logic
     Player_movement(dt)
-
     -- Goblin movement logic
     Goblin_move(dt)
-
     -- attack logic
     Attack_logic()
-
     -- handle boundaries
     Boundary_handler()
-
     -- Dodge handling
     Update_dodge(dt)
-
     -- picking up sword
     Pick_up_sword()
-
     -- Attack_logic
     Attacking_hitbox_handler()
-
     -- Effects for player touching goblin
     Player_touches_goblin()
-
     -- Update animation
     Animation_updater(dt)
 end

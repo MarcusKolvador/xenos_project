@@ -11,8 +11,11 @@ local weapon_offset_front = 50
 local weapon_offset_back = -40
 local weapon_offset_vertical = - 15
 
---#regionAttacking = false
+-- default state
 local Attacking = false
+
+-- enemy knockbacks
+local goblin_knockback = 30
 
 function Update_dodge(dt)
 
@@ -129,5 +132,15 @@ end
 function Player_touches_goblin()
     if isColliding(player_entity, goblin_entity) then
         Character_hurt:play()
+        if player_entity.x < goblin_entity.x then
+            player_entity.x = player_entity.x - goblin_knockback
+        else
+            player_entity.x = player_entity.x + goblin_knockback
+        end
+        if player_entity.y < goblin_entity.y then
+            player_entity.y = player_entity.y - goblin_knockback
+        else
+            player_entity.y = player_entity.y + goblin_knockback
+        end
     end
 end
