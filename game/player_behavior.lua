@@ -17,6 +17,10 @@ local Attacking = false
 -- enemy knockbacks
 local goblin_knockback = 30
 
+-- draw settings
+local sword_equipped_offset_left_x = 10
+local sword_equipped_offset_right_x = - 11
+
 function Update_dodge(dt)
 
     -- registers the dodge input
@@ -143,4 +147,27 @@ function Player_touches_goblin()
             player_entity.y = player_entity.y + goblin_knockback
         end
     end
+end
+
+function Draw_dodge_effect()
+    if not Dodge_up then
+        love.graphics.draw(Spritesheets["dodge_ui"], Frames["dodge_ui"][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    end
+end
+
+function Draw_equipped_sword()
+    if Equipped_sword then
+        if Character~= "right" then
+            love.graphics.draw(Spritesheets["sword_equipped"], Frames["sword_equipped"][CurrentFrame], player_entity.x - Player_hitbox_x
+            - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+        else
+            love.graphics.draw(Spritesheets["sword_equipped_right"], Frames["sword_equipped_right"][CurrentFrame], player_entity.x - Player_hitbox_x
+            - Player_hitbox_offset_x - sword_equipped_offset_right_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+        end
+    end
+end
+
+function Draw_player()
+    love.graphics.draw(Spritesheets[Character], Frames[Character][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+    - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
 end

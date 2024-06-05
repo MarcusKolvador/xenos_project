@@ -48,3 +48,10 @@ function Animation_updater(dt)
         CurrentFrame = 1
     end
 end
+
+function Draw_hitboxes()
+    -- Draw hitboxes
+    if Hitbox_debug == true then
+        debug()
+    end
+end

@@ -15,8 +15,8 @@ FRAME_HEIGHT = 32
 FRAME_COUNT = 4
 local MOVE_SPEED = {normal = 150, dodge = 700}
 -- Variables
-spritesheets = {}
-frames = {}
+Spritesheets = {}
+Frames = {}
 local x, y
 Moving = false
 Character = "front"
@@ -32,8 +32,6 @@ Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
-local sword_equipped_offset_left_x = 10
-local sword_equipped_offset_right_x = - 11
 -- Global variables
 CurrentFrame = 1
 Hitbox_debug = false
@@ -57,8 +55,8 @@ function love.load()
     -- Initialize entities
     goblin_entity = SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
-    player_entity = Player_entity:new(x, y, spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
-    sword_equipped_entity = Sword_equipped_entity:new(0, 0, spritesheets["sword_equipped"], 0, 0)  -- 0 hitbox as it is not yet equipped
+    player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
+    sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0)  -- 0 hitbox as it is not yet equipped
 end
 
 -- Update game state
@@ -94,42 +92,17 @@ end
 -- Render the game
 function love.draw()
     -- Draw background
-    for bg_y = 0, love.graphics.getHeight() / (background:getHeight() * ScaleFactor) do
-        for bg_x = 0, love.graphics.getWidth() / (background:getWidth() * ScaleFactor) do
-            love.graphics.draw(background, bg_x * background:getWidth() * ScaleFactor, bg_y * background:getHeight() * ScaleFactor, 0, ScaleFactor)
-        end
-    end
-
+    Draw_background()
     -- draws sword_entity if not equipped
-    if not Equipped_sword then
-        love.graphics.draw(sword_sprite, sword_entity.x - Sword_hitbox_x, sword_entity.y - Sword_hitbox_y, 0, ScaleFactor / 2, ScaleFactor / 2)
-    end
-
+    Draw_sword()
     -- Draw goblin
-    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
-    - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
-    
+    Draw_goblin()
     -- Draw player
-    love.graphics.draw(spritesheets[Character], frames[Character][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
-    - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    Draw_player()
     -- Draw equipped sword
-    if Equipped_sword then
-        if Character~= "right" then
-            love.graphics.draw(spritesheets["sword_equipped"], frames["sword_equipped"][CurrentFrame], player_entity.x - Player_hitbox_x
-            - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
-        else
-            love.graphics.draw(spritesheets["sword_equipped_right"], frames["sword_equipped_right"][CurrentFrame], player_entity.x - Player_hitbox_x
-            - Player_hitbox_offset_x - sword_equipped_offset_right_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
-        end
-    end
-
-    -- Draw hitboxes
-    if Hitbox_debug == true then
-        debug()
-    end
-
-    -- Draw UI
-    if not Dodge_up then
-        love.graphics.draw(spritesheets["dodge_ui"], frames["dodge_ui"][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
-    end
+    Draw_equipped_sword()
+    -- Draw hitboexes if triggered with button "k"
+    Draw_hitboxes()
+    -- Draw dodge effect
+    Draw_dodge_effect()
 end

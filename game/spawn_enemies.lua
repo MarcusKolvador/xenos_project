@@ -29,3 +29,8 @@ function Goblin_move(dt)
         goblin_entity.y = goblin_entity.y + goblin_entity.movespeed * dt
     end
 end
+
+function Draw_goblin()
+    love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
+    - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+end
