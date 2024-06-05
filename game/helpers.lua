@@ -14,26 +14,27 @@ function love.keypressed(key)
     end
 end
 
-function Boundary_handler()
+function Boundary_handler(x, y)
     local minX, minY = 0, 0
     local maxX, maxY = love.graphics.getWidth(), love.graphics.getHeight()
     local newBoing = love.audio.newSource("assets/boing.mp3", "static")
-    player_entity.x = math.max(minX, math.min(maxX, player_entity.x))
-    player_entity.y = math.max(minY, math.min(maxY, player_entity.y))
-    if player_entity.x >= maxX then
+    x = math.max(minX, math.min(maxX, x))
+    y = math.max(minY, math.min(maxY, y))
+    if x >= maxX then
         newBoing:play()
-        player_entity.x = maxX - 20
+        x = maxX - 20
     elseif player_entity.x <= minX then
         newBoing:play()
-        player_entity.x = minX + 20
+        x = minX + 20
     end
-    if player_entity.y >= maxY then
+    if y >= maxY then
         newBoing:play()
-        player_entity.y = maxY - 20
-    elseif player_entity.y <= minY then
+        y = maxY - 20
+    elseif y <= minY then
         newBoing:play()
-        player_entity.y = minY + 20
+        y = minY + 20
     end
+    return x, y
 end
 
 function Animation_updater(dt)

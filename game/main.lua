@@ -77,7 +77,8 @@ function love.update(dt)
     -- attack logic
     Attack_logic()
     -- handle boundaries
-    Boundary_handler()
+    player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
+    goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
     -- Dodge handling
     Update_dodge(dt)
     -- picking up sword
