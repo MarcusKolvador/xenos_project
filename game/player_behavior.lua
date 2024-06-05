@@ -7,19 +7,23 @@ local dodge_cooldown_period = 5
 -- weapon hitbox offsets
 local weapon_offset_left = 40
 local weapon_offset_right = 37
-local weapon_offset_front = 50
-local weapon_offset_back = -40
+local weapon_offset_front = 45
+local weapon_offset_back = - 20
 local weapon_offset_vertical = - 15
-
--- default state
-local Attacking = false
+local weapon_offset_horizontal = 22
 
 -- enemy knockbacks
 local goblin_knockback = 30
 
+-- attack settings
+local attack_duration = 0.2
+local attack_timer = 0
+
 -- draw settings
 local sword_equipped_offset_left_x = 10
 local sword_equipped_offset_right_x = - 11
+local sword_attack_offset_y = - 23
+local attacking_model_offset_side = 17
 
 function Update_dodge(dt)
 
@@ -45,37 +49,43 @@ function Update_dodge(dt)
     end
 end
 
-function Attack_logic()
+function Attack_logic(dt)
     if love.mouse.isDown(1) then
-        Moving = false
-        Attacking = true
-        if Equipped_sword == true then
-            local cutInstance = CutSound:clone()
-            if not CutSound:play() then
-                cutInstance:play()
+        attack_timer = attack_timer + dt
+        if attack_timer < attack_duration then
+            Moving = false
+            Attacking = true
+            if Equipped_sword == true then
+                local cutInstance = CutSound:clone()
+                if not CutSound:play() then
+                    cutInstance:play()
+                end
             end
-        end
-        if isColliding(sword_equipped_entity, goblin_entity) then
-            local GoblinHurtInstance = GoblinHurtSound:clone()
-            if not GoblinHurtSound:play() then
-                GoblinHurtInstance:play()
+            if isColliding(sword_equipped_entity, goblin_entity) then
+                local GoblinHurtInstance = GoblinHurtSound:clone()
+                if not GoblinHurtSound:play() then
+                    GoblinHurtInstance:play()
+                end
+                if Character == "right" then
+                    goblin_entity.x = goblin_entity.x + 50
+                    goblin_entity.y = goblin_entity.y + 10
+                elseif Character == "left" then
+                    goblin_entity.x = goblin_entity.x - 50
+                    goblin_entity.y = goblin_entity.y + 10
+                elseif Character == "front" then
+                    goblin_entity.x = goblin_entity.x + 10
+                    goblin_entity.y = goblin_entity.y + 50
+                elseif Character == "back" then
+                    goblin_entity.x = goblin_entity.x + 10
+                    goblin_entity.y = goblin_entity.y - 50
+                end
             end
-            if Character == "right" then
-                goblin_entity.x = goblin_entity.x + 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif Character == "left" then
-                goblin_entity.x = goblin_entity.x - 50
-                goblin_entity.y = goblin_entity.y + 10
-            elseif Character == "front" then
-                goblin_entity.x = goblin_entity.x + 10
-                goblin_entity.y = goblin_entity.y + 50
-            elseif Character == "back" then
-                goblin_entity.x = goblin_entity.x + 10
-                goblin_entity.y = goblin_entity.y - 50
-            end
+        else
+            Attacking = false
         end
     else
         Attacking = false
+        attack_timer = 0
     end
 end
 
@@ -102,8 +112,8 @@ end
 
 function Attacking_hitbox_handler()
     if Equipped_sword and Attacking then
-        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
-        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
+        sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_x
+        sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_y
         if Character == "left" then
             sword_equipped_entity.x = player_entity.x - weapon_offset_left
             sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
@@ -112,10 +122,10 @@ function Attacking_hitbox_handler()
             sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
         elseif Character == "front" then
             sword_equipped_entity.y = player_entity.y + weapon_offset_front
-            sword_equipped_entity.x = player_entity.x
+            sword_equipped_entity.x = player_entity.x - weapon_offset_horizontal
         elseif Character == "back" then
             sword_equipped_entity.y = player_entity.y + weapon_offset_back
-            sword_equipped_entity.x = player_entity.x
+            sword_equipped_entity.x = player_entity.x - weapon_offset_horizontal
         end
     else
         sword_equipped_entity.hitboxHeight = 0
@@ -156,7 +166,7 @@ function Draw_dodge_effect()
 end
 
 function Draw_equipped_sword()
-    if Equipped_sword then
+    if Equipped_sword and not Attacking then
         if Character~= "right" then
             love.graphics.draw(Spritesheets["sword_equipped"], Frames["sword_equipped"][CurrentFrame], player_entity.x - Player_hitbox_x
             - Player_hitbox_offset_x - sword_equipped_offset_left_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
@@ -170,4 +180,20 @@ end
 function Draw_player()
     love.graphics.draw(Spritesheets[Character], Frames[Character][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
     - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+end
+
+function Attack_animation()
+    local key = "sword_attack_" .. Character
+    if Equipped_sword and Attacking then
+        if Character == "front" or Character == "back" then
+            love.graphics.draw(Spritesheets[key], Frames[key][CurrentAttackFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+            - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)
+        elseif Character == "left" then
+            love.graphics.draw(Spritesheets[key], Frames[key][CurrentAttackFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x - attacking_model_offset_side, player_entity.y
+            - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)
+        else
+            love.graphics.draw(Spritesheets[key], Frames[key][CurrentAttackFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x + attacking_model_offset_side, player_entity.y
+            - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)
+        end
+    end
 end

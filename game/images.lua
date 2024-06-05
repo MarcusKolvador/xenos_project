@@ -13,6 +13,9 @@ function Load_images()
         sword_equipped = love.graphics.newImage("assets/sword_equipped.png"),
         sword_equipped_right = love.graphics.newImage("assets/sword_equipped_right.png"),
         -- Weapon attack sprites
+        sword_attack_left = love.graphics.newImage("assets/attack_left.png"),
+        sword_attack_right = love.graphics.newImage("assets/attack_right.png"),
+        sword_attack_back = love.graphics.newImage("assets/attack_back.png"),
         sword_attack_front = love.graphics.newImage("assets/attack_front.png"),
     }
     -- Item sprites

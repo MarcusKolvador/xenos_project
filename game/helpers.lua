@@ -1,5 +1,7 @@
 local elapsedTime = 0
 local FRAME_TIME = 0.25
+local ATTACK_FRAME_TIME = 0.05
+local elapsedTimeAttack = 0
 
 function debug()
     love.graphics.rectangle("line", sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_HEIGHT / 2, sword_entity.hitboxWidth * ScaleFactor, sword_entity.hitboxHeight * ScaleFactor)
@@ -38,6 +40,7 @@ function Boundary_handler(x, y)
 end
 
 function Animation_updater(dt)
+    ---
     if Moving then
         elapsedTime = elapsedTime + dt
         if elapsedTime >= FRAME_TIME then
@@ -46,6 +49,16 @@ function Animation_updater(dt)
         end
     else
         CurrentFrame = 1
+    end
+    ---
+    if Attacking then
+        elapsedTimeAttack = elapsedTimeAttack + dt
+        if elapsedTimeAttack >= ATTACK_FRAME_TIME then
+            elapsedTimeAttack = elapsedTimeAttack - ATTACK_FRAME_TIME
+            CurrentAttackFrame = (CurrentAttackFrame % FRAME_COUNT) + 1
+        end
+    else
+        CurrentAttackFrame = 1
     end
 end
 

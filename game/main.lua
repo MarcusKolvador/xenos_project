@@ -25,8 +25,8 @@ Player_hitbox_x = 24
 Player_hitbox_y = 30
 Sword_hitbox_x = 16
 Sword_hitbox_y = 16
-Sword_equipped_hitbox_x = 15
-Sword_equipped_hitbox_y = 15
+Sword_equipped_hitbox_x = 28
+Sword_equipped_hitbox_y = 16
 -- model offsets in regard to entity
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
@@ -34,6 +34,7 @@ Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
 -- Global variables
 CurrentFrame = 1
+CurrentAttackFrame = 1
 Hitbox_debug = false
 Dodge = false
 Dodge_up = false
@@ -44,6 +45,8 @@ Goblin_hitbox_y = 20
 Player_entity_movespeed = 100
 Goblin_entity_movespeed = 30
 Equipped_sword = false
+Attacking = false
+Attack_finished = true
 
 
 -- Load assets and initialize
@@ -73,7 +76,7 @@ function love.update(dt)
     -- Goblin movement logic
     Goblin_move(dt)
     -- attack logic
-    Attack_logic()
+    Attack_logic(dt)
     -- handle boundaries
     player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
     goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
@@ -98,11 +101,17 @@ function love.draw()
     -- Draw goblin
     Draw_goblin()
     -- Draw player
-    Draw_player()
+    if Character ~= "back" then
+        Draw_player()
+        Attack_animation()
+    else
+        Attack_animation()
+        Draw_player()
+    end
     -- Draw equipped sword
     Draw_equipped_sword()
     -- Draw hitboexes if triggered with button "k"
     Draw_hitboxes()
     -- Draw dodge effect
-    Draw_dodge_effect()
+    Draw_dodge_effect()    
 end

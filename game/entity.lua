@@ -5,11 +5,9 @@ Entity.__index = Entity
 function Entity:new(x, y, sprite)
     local entity = {}
     setmetatable(entity, Entity)
-
     entity.x = x
     entity.y = y
     entity.sprite = sprite
-
     return entity
 end
 
@@ -19,6 +17,7 @@ end
 
 -- Sword entity inheriting from Entity
 local Sword_entity = setmetatable({}, { __index = Entity })
+Sword_entity.__index = Sword_entity
 
 function Sword_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
     local sword_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
