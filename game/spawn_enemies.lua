@@ -9,11 +9,11 @@ function SpawnGoblin()
     local middle_y_max = MapHeight * 0.6
 
     repeat
-        goblin_x = math.random(0, MapWidth - 50)
-        goblin_y = math.random(0, MapHeight - 50)
+        goblin_x = math.random(0, MapWidth - 60)
+        goblin_y = math.random(0, MapHeight - 60)
     until not (goblin_x >= middle_x_min and goblin_x <= middle_x_max and goblin_y >= middle_y_min and goblin_y <= middle_y_max)
 
-    goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed)
+    goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed, Goblin_entity_health, Goblin_entity_damage)
     return goblin_entity
 end
 
@@ -33,4 +33,13 @@ end
 function Draw_goblin()
     love.graphics.draw(goblin_sprite, goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
     - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+end
+
+function Goblin_death()
+    if goblin_entity.health <= 0 then
+        GoblinHurtSound:stop()
+        Goblin_death_sound:play()
+        goblin_entity = nil
+        player_entity.kills = player_entity.kills + 1
+    end
 end

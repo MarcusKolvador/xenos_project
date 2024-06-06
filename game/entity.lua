@@ -30,10 +30,11 @@ end
 -- Sword equipped entity
 local Sword_equipped_entity = setmetatable({}, { __index = Entity })
 
-function Sword_equipped_entity:new(x, y, sprite, hitboxWidth, hitboxHeight)
+function Sword_equipped_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, damage)
     local sword_equipped_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     sword_equipped_entity.hitboxWidth = hitboxWidth
     sword_equipped_entity.hitboxHeight = hitboxHeight
+    sword_equipped_entity.damage = damage
     setmetatable(sword_equipped_entity, Sword_equipped_entity)
     return sword_equipped_entity
 end
@@ -41,22 +42,26 @@ end
 -- Player entity inheriting from Entity
 local Player_entity = setmetatable({}, { __index = Entity })
 
-function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed)
+function Player_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed, health, kills)
     local player_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     player_entity.hitboxWidth = hitboxWidth
     player_entity.hitboxHeight = hitboxHeight
     player_entity.movespeed = movespeed
+    player_entity.health = health
+    player_entity.kills = kills
     setmetatable(player_entity, Player_entity)
     return player_entity
 end
 
 local Goblin_entity = setmetatable({}, { __index = Entity })
 
-function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed)
+function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed, health, damage)
     local goblin_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     goblin_entity.hitboxWidth = hitboxWidth
     goblin_entity.hitboxHeight = hitboxHeight
     goblin_entity.movespeed = movespeed
+    goblin_entity.health = health
+    goblin_entity.damage = damage
     setmetatable(goblin_entity, Goblin_entity)
     return goblin_entity
 end

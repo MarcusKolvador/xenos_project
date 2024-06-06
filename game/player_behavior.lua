@@ -61,23 +61,26 @@ function Attack_logic(dt)
                     cutInstance:play()
                 end
             end
-            if isColliding(sword_equipped_entity, goblin_entity) then
-                local GoblinHurtInstance = GoblinHurtSound:clone()
-                if not GoblinHurtSound:play() then
-                    GoblinHurtInstance:play()
-                end
-                if Character == "right" then
-                    goblin_entity.x = goblin_entity.x + 50
-                    goblin_entity.y = goblin_entity.y + 10
-                elseif Character == "left" then
-                    goblin_entity.x = goblin_entity.x - 50
-                    goblin_entity.y = goblin_entity.y + 10
-                elseif Character == "front" then
-                    goblin_entity.x = goblin_entity.x + 10
-                    goblin_entity.y = goblin_entity.y + 50
-                elseif Character == "back" then
-                    goblin_entity.x = goblin_entity.x + 10
-                    goblin_entity.y = goblin_entity.y - 50
+            if goblin_entity then
+                if isColliding(sword_equipped_entity, goblin_entity) then
+                    local GoblinHurtInstance = GoblinHurtSound:clone()
+                    goblin_entity.health = goblin_entity.health - sword_equipped_entity.damage
+                    if not GoblinHurtSound:play() then
+                        GoblinHurtInstance:play()
+                    end
+                    if Character == "right" then
+                        goblin_entity.x = goblin_entity.x + 50
+                        goblin_entity.y = goblin_entity.y + 10
+                    elseif Character == "left" then
+                        goblin_entity.x = goblin_entity.x - 50
+                        goblin_entity.y = goblin_entity.y + 10
+                    elseif Character == "front" then
+                        goblin_entity.x = goblin_entity.x + 10
+                        goblin_entity.y = goblin_entity.y + 50
+                    elseif Character == "back" then
+                        goblin_entity.x = goblin_entity.x + 10
+                        goblin_entity.y = goblin_entity.y - 50
+                    end
                 end
             end
         else
@@ -146,6 +149,7 @@ end
 function Player_touches_goblin()
     if isColliding(player_entity, goblin_entity) then
         Character_hurt:play()
+        player_entity.health = player_entity.health - goblin_entity.damage
         if player_entity.x < goblin_entity.x then
             player_entity.x = player_entity.x - goblin_knockback
         else

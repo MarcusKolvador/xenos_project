@@ -47,6 +47,13 @@ Goblin_entity_movespeed = 30
 Equipped_sword = false
 Attacking = false
 Attack_finished = true
+Goblin_entity_health = 50
+Player_entity_health = 100
+Sword_equipped_entity_damage = 30
+Goblin_entity_damage = 30
+local kills = 0
+
+
 
 
 -- Load assets and initialize
@@ -58,8 +65,8 @@ function love.load()
     -- Initialize entities
     goblin_entity = SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
-    player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed)
-    sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0)  -- 0 hitbox as it is not yet equipped
+    player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed, Player_entity_health, kills)
+    sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0, Sword_equipped_entity_damage)  -- 0 hitbox as it is not yet equipped
 end
 
 -- Update game state
@@ -73,23 +80,26 @@ function love.update(dt)
 
     -- Player movement logic
     Player_movement(dt)
-    -- Goblin movement logic
-    Goblin_move(dt)
-    -- attack logic
-    Attack_logic(dt)
+    -- Goblin entity
+    if goblin_entity then
+        Goblin_move(dt)
+        goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
+        Player_touches_goblin()
+        Attacking_hitbox_handler()
+        Goblin_death()
+    end
+    -- Respawn goblin
+    if not goblin_entity then
+        SpawnGoblin()
+    end
     -- handle boundaries
     player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
-    goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
-    -- Dodge handling
+    -- Handle player behavior
     Update_dodge(dt)
-    -- picking up sword
+    Attack_logic(dt)
     Pick_up_sword()
-    -- Attack_logic
-    Attacking_hitbox_handler()
-    -- Effects for player touching goblin
-    Player_touches_goblin()
-    -- Update animation
     Animation_updater(dt)
+    
 end
 
 -- Render the game
@@ -99,7 +109,9 @@ function love.draw()
     -- draws sword_entity if not equipped
     Draw_sword()
     -- Draw goblin
-    Draw_goblin()
+    if goblin_entity then
+        Draw_goblin()
+    end
     -- Draw player
     if Character ~= "back" then
         Draw_player()
@@ -113,5 +125,7 @@ function love.draw()
     -- Draw hitboexes if triggered with button "k"
     Draw_hitboxes()
     -- Draw dodge effect
-    Draw_dodge_effect()    
+    Draw_dodge_effect()
+
+    love.graphics.print("Kills: " .. player_entity.kills, 10, 10)
 end

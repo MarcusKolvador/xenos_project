@@ -7,4 +7,5 @@ function Load_sounds()
     CutSound = love.audio.newSource("assets/cut_sound.mp3", "static")
     Character_hurt = love.audio.newSource("assets/character_ouch.mp3", "static")
     GoblinHurtSound = love.audio.newSource("assets/goblin_hurt_sound.mp3", "static")
+    Goblin_death_sound = love.audio.newSource("assets/goblin_scream.mp3", "static")
 end
