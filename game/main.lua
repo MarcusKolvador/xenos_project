@@ -52,6 +52,9 @@ Player_entity_health = 100
 Sword_equipped_entity_damage = 30
 Goblin_entity_damage = 30
 local kills = 0
+Enemies = {}
+local spawnTimer = 0
+local spawnInterval = 2
 
 
 
@@ -63,7 +66,7 @@ function love.load()
     -- Initialize the center of the map
     x, y = MapWidth / 2, MapHeight / 2
     -- Initialize entities
-    goblin_entity = SpawnGoblin()
+    SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
     player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed, Player_entity_health, kills)
     sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0, Sword_equipped_entity_damage)  -- 0 hitbox as it is not yet equipped
@@ -83,13 +86,17 @@ function love.update(dt)
     -- Goblin entity
     if goblin_entity then
         Goblin_move(dt)
-        goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
+        for _, goblin_entity in ipairs(Enemies) do
+            goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
+        end
         Player_touches_goblin()
         Attacking_hitbox_handler()
         Goblin_death()
     end
     -- Respawn goblin
-    if not goblin_entity then
+    spawnTimer = spawnTimer + dt
+    if spawnTimer >= spawnInterval then 
+        spawnTimer = 0
         SpawnGoblin()
     end
     -- handle boundaries
