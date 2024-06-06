@@ -25,12 +25,15 @@ local sword_equipped_offset_right_x = - 11
 local sword_attack_offset_y = - 23
 local attacking_model_offset_side = 17
 
+-- misc
+local game_end = false
+
 function Update_dodge(dt)
 
     -- registers the dodge input
     Dodge = love.keyboard.isDown('space')
     -- records the time the dodge button is held
-    if Dodge then
+    if Dodge and Player_controls then
         dodge_button_timer = dodge_button_timer + dt
     else
         -- resets the ticker if dodge button released
@@ -50,7 +53,7 @@ function Update_dodge(dt)
 end
 
 function Attack_logic(dt)
-    if love.mouse.isDown(1) then
+    if love.mouse.isDown(1) and Player_controls then
         attack_timer = attack_timer + dt
         if attack_timer < attack_duration then
             Moving = false
@@ -95,23 +98,25 @@ function Attack_logic(dt)
 end
 
 function Player_movement(dt)
-    if love.keyboard.isDown('s') then
-        Character = "front"
-        player_entity.y = player_entity.y + player_entity.movespeed * dt
-        Moving = true
-    elseif love.keyboard.isDown('w') then
-        Character = "back"
-        player_entity.y = player_entity.y - player_entity.movespeed * dt
-        Moving = true
-    end
-    if love.keyboard.isDown('a') then
-        Character = "left"
-        player_entity.x = player_entity.x - player_entity.movespeed * dt
-        Moving = true
-    elseif love.keyboard.isDown('d') then
-        Character = "right"
-        player_entity.x = player_entity.x + player_entity.movespeed * dt
-        Moving = true
+    if Player_controls then
+        if love.keyboard.isDown('s') then
+            Character = "front"
+            player_entity.y = player_entity.y + player_entity.movespeed * dt
+            Moving = true
+        elseif love.keyboard.isDown('w') then
+            Character = "back"
+            player_entity.y = player_entity.y - player_entity.movespeed * dt
+            Moving = true
+        end
+        if love.keyboard.isDown('a') then
+            Character = "left"
+            player_entity.x = player_entity.x - player_entity.movespeed * dt
+            Moving = true
+        elseif love.keyboard.isDown('d') then
+            Character = "right"
+            player_entity.x = player_entity.x + player_entity.movespeed * dt
+            Moving = true
+        end
     end
 end
 
@@ -139,7 +144,7 @@ function Attacking_hitbox_handler()
 end
 
 function Pick_up_sword()
-    if isColliding(player_entity, sword_entity) then
+    if isColliding(player_entity, sword_entity) and Player_controls then
         Equipped_sword = true
     end
     if Equipped_sword then
@@ -151,7 +156,9 @@ end
 function Player_touches_goblin()
     for _, goblin_entity in ipairs(Enemies) do
         if isColliding(player_entity, goblin_entity) then
-            Character_hurt:play()
+            if Player_controls then
+                Character_hurt:play()
+            end
             player_entity.health = player_entity.health - goblin_entity.damage
             if player_entity.x < goblin_entity.x then
                 player_entity.x = player_entity.x - goblin_knockback
@@ -204,4 +211,25 @@ function Attack_animation()
             - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)
         end
     end
+end
+
+function Player_death()
+    if player_entity.health <= 0 and not game_end then
+        BackgroundMusic:pause()
+        Player_death_sound:play()
+        Player_death_sound:setLooping(false)
+        Player_controls = false
+        game_end = true
+    end
+end
+
+function Draw_loss()
+love.graphics.setColor(1, 0, 0) -- Set color to red
+love.graphics.setFont(Font_death)
+        local text = "YOU LOSE"
+        local text_width = love.graphics.getFont():getWidth(text)
+        local text_height = love.graphics.getFont():getHeight(text)
+        local x = (love.graphics.getWidth() - text_width) / 2
+        local y = (love.graphics.getHeight() - text_height) / 2
+        love.graphics.print(text, x, y)
 end

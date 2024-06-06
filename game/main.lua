@@ -55,6 +55,7 @@ local kills = 0
 Enemies = {}
 local spawnTimer = 0
 local spawnInterval = 2
+Player_controls = true
 
 
 
@@ -106,7 +107,7 @@ function love.update(dt)
     Attack_logic(dt)
     Pick_up_sword()
     Animation_updater(dt)
-    
+    Player_death()
 end
 
 -- Render the game
@@ -133,6 +134,12 @@ function love.draw()
     Draw_hitboxes()
     -- Draw dodge effect
     Draw_dodge_effect()
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setFont(Font)
+    love.graphics.print("Health: " .. math.max(player_entity.health, 0), 10, 10)
+    love.graphics.print("Kills: " .. player_entity.kills, 10, 40)
 
-    love.graphics.print("Kills: " .. player_entity.kills, 10, 10)
+    if not Player_controls then
+        Draw_loss()
+    end
 end

@@ -22,6 +22,9 @@ function Load_images()
     sword_sprite = love.graphics.newImage("assets/sword.png")
     -- Enemies
     goblin_sprite = love.graphics.newImage("assets/goblin.png")
+    -- Fonts
+    Font = love.graphics.newFont("assets/Lobster-Regular.ttf", 22)
+    Font_death = love.graphics.newFont("assets/Lobster-Regular.ttf", 64)
     -- Read Frames from sprites, assuming they're placed horizontally, at 4 Frames
     for sprite, spritesheet in pairs(Spritesheets) do
         Frames[sprite] = {}
