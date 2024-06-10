@@ -1,4 +1,5 @@
 function Load_sounds()
+    love.audio.setVolume(0.5)
     -- Load music
     BackgroundMusic = love.audio.newSource("assets/demon-slayer-8687.mp3", "stream")
     love.audio.play(BackgroundMusic)

@@ -20,13 +20,14 @@ Frames = {}
 local x, y
 Moving = false
 Character = "front"
+Goblin_direction = "front"
 -- hitboxes
 Player_hitbox_x = 24
 Player_hitbox_y = 30
 Sword_hitbox_x = 16
 Sword_hitbox_y = 16
-Sword_equipped_hitbox_x = 28
-Sword_equipped_hitbox_y = 16
+Sword_equipped_hitbox_x = 30
+Sword_equipped_hitbox_y = 18
 -- model offsets in regard to entity
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
@@ -35,6 +36,7 @@ Player_hitbox_offset_y = -8
 -- Global variables
 CurrentFrame = 1
 CurrentAttackFrame = 1
+CurrentGoblinFrame = 1
 Hitbox_debug = false
 Dodge = false
 Dodge_up = false
@@ -54,7 +56,7 @@ Goblin_entity_damage = 30
 local kills = 0
 Enemies = {}
 local spawnTimer = 0
-local spawnInterval = 2
+local spawnInterval = 3
 Player_controls = true
 
 

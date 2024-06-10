@@ -1,0 +1,8 @@
+name = "makelove game --init"
+default_targets = ["win32", "win64", "appimage"]
+build_directory = "game"
+
+love_files = [
+    "::git-ls-tree::",
+    "+game/assets/*",  # Include all files inside the assets folder
+]

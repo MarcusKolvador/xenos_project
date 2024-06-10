@@ -55,13 +55,14 @@ end
 
 local Goblin_entity = setmetatable({}, { __index = Entity })
 
-function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed, health, damage)
+function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed, health, damage, direction)
     local goblin_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     goblin_entity.hitboxWidth = hitboxWidth
     goblin_entity.hitboxHeight = hitboxHeight
     goblin_entity.movespeed = movespeed
     goblin_entity.health = health
     goblin_entity.damage = damage
+    goblin_entity.direction = direction
     setmetatable(goblin_entity, Goblin_entity)
     return goblin_entity
 end
