@@ -22,8 +22,8 @@ local attack_timer = 0
 -- draw settings
 local sword_equipped_offset_left_x = 10
 local sword_equipped_offset_right_x = - 11
-local sword_attack_offset_y = - 23
-local attacking_model_offset_side = 17
+local sword_attack_offset_y = - 17
+local attacking_model_offset_side = 45
 
 -- misc
 local game_end = false
@@ -199,13 +199,22 @@ function Draw_equipped_sword()
 end
 
 function Draw_player()
-    love.graphics.draw(Spritesheets[Character], Frames[Character][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+    -- print(Character)
+    local key = Character
+    local frame = CurrentFrame
+    if Attacking then
+        key = "attack_" .. Character
+        frame = CurrentAttackFrame
+    end
+    love.graphics.draw(Spritesheets[key], Frames[key][frame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
     - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
 end
 
 function Attack_animation()
-    local key = "sword_attack_" .. Character
     if Equipped_sword and Attacking then
+        local key = "sword_attack_" .. Character
+        print(key)
+        -- print(Character)
         if Character == "front" or Character == "back" then
             love.graphics.draw(Spritesheets[key], Frames[key][CurrentAttackFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
             - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)

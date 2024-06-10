@@ -7,16 +7,20 @@ function Load_images()
         right = love.graphics.newImage("assets/avatar_right.png"),
         back = love.graphics.newImage("assets/avatar_back.png"),
         front = love.graphics.newImage("assets/avatar_front.png"),
+        attack_front = love.graphics.newImage("assets/character_attack_front.png"),
+        attack_back = love.graphics.newImage("assets/character_attack_back.png"),
+        attack_left = love.graphics.newImage("assets/character_attack_left.png"),
+        attack_right = love.graphics.newImage("assets/character_attack_right.png"),
         -- Character status effects
         dodge_ui = love.graphics.newImage("assets/dodge.png"),
         -- Weapon equipped sprites
         sword_equipped = love.graphics.newImage("assets/sword_equipped.png"),
         sword_equipped_right = love.graphics.newImage("assets/sword_equipped_right.png"),
         -- Weapon attack sprites
-        sword_attack_left = love.graphics.newImage("assets/attack_left.png"),
-        sword_attack_right = love.graphics.newImage("assets/attack_right.png"),
-        sword_attack_back = love.graphics.newImage("assets/attack_back.png"),
-        sword_attack_front = love.graphics.newImage("assets/attack_front.png"),
+        sword_attack_left = love.graphics.newImage("assets/sword_left.png"),
+        sword_attack_right = love.graphics.newImage("assets/sword_right.png"),
+        sword_attack_back = love.graphics.newImage("assets/sword_back.png"),
+        sword_attack_front = love.graphics.newImage("assets/sword_front.png"),
         -- Goblin move sprites
         goblin_left = love.graphics.newImage("assets/goblin_left.png"),
         goblin_right = love.graphics.newImage("assets/goblin_right.png"),
