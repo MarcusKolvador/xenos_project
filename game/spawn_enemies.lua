@@ -45,6 +45,15 @@ end
 function Draw_goblin()
     for _, goblin_entity in ipairs(Enemies) do
         local key = "goblin_" .. goblin_entity.direction
+        if goblin_entity.isDamaged or not Player_controls then
+            love.graphics.setColor(1, 0, 0)
+            love.graphics.draw(Spritesheets[key], Frames[key][CurrentGoblinFrame], goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
+            - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+        else
+            love.graphics.setColor(1, 1, 1)
+            love.graphics.draw(Spritesheets[key], Frames[key][CurrentGoblinFrame], goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
+            - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+        end
         love.graphics.draw(Spritesheets[key], Frames[key][CurrentGoblinFrame], goblin_entity.x - Goblin_hitbox_x - Goblin_hitbox_offset_x, goblin_entity.y - Goblin_hitbox_y
         - Goblin_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
     end

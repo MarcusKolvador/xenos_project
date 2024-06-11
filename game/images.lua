@@ -31,6 +31,8 @@ function Load_images()
     sword_sprite = love.graphics.newImage("assets/sword.png")
     -- Enemies
     goblin_sprite = love.graphics.newImage("assets/goblin.png")
+    -- Character Sprite
+    character_sprite = love.graphics.newImage("assets/avatar.png")
     -- Fonts
     Font = love.graphics.newFont("assets/Lobster-Regular.ttf", 22)
     Font_death = love.graphics.newFont("assets/Lobster-Regular.ttf", 64)

@@ -81,3 +81,13 @@ function Draw_hitboxes()
         debug()
     end
 end
+
+function FlashRedTimer(dt, entity)
+    local interval = 0.3
+    FlashTimer = FlashTimer + dt
+    if FlashTimer >= interval then
+        entity.isDamaged = false
+        FlashTimer = 0
+    end
+end
+

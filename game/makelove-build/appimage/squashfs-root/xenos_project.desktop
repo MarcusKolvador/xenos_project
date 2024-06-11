@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=xenos_project
-Exec=xenos_project %f
-Categories=Game;
-Terminal=false
-Icon=love

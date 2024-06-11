@@ -34,6 +34,8 @@ Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
 -- Global variables
+local isDamaged = false
+FlashTimer = 0
 CurrentFrame = 1
 CurrentAttackFrame = 1
 CurrentGoblinFrame = 1
@@ -56,7 +58,7 @@ Goblin_entity_damage = 30
 local kills = 0
 Enemies = {}
 local spawnTimer = 0
-local spawnInterval = 3
+local spawnInterval = 2
 Player_controls = true
 
 
@@ -71,12 +73,18 @@ function love.load()
     -- Initialize entities
     SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
-    player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed, Player_entity_health, kills)
+    player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed, Player_entity_health, kills, isDamaged)
     sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0, Sword_equipped_entity_damage)  -- 0 hitbox as it is not yet equipped
 end
 
 -- Update game state
 function love.update(dt)
+    FlashRedTimer(dt, player_entity)
+    if goblin_entity then
+        for _, goblin_entity in ipairs(Enemies) do
+            FlashRedTimer(dt, goblin_entity)
+        end
+    end
     -- set speed depending on if dodging or not
     player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
     Moving = false
@@ -92,7 +100,7 @@ function love.update(dt)
         for _, goblin_entity in ipairs(Enemies) do
             goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
         end
-        Player_touches_goblin()
+        Player_touches_goblin(dt)
         Attacking_hitbox_handler()
         Goblin_death()
     end

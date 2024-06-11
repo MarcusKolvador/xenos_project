@@ -67,6 +67,7 @@ function Attack_logic(dt)
             if goblin_entity then
                 for _, goblin_entity in ipairs(Enemies) do
                     if isColliding(sword_equipped_entity, goblin_entity) then
+                        goblin_entity.isDamaged = true
                         local GoblinHurtInstance = GoblinHurtSound:clone()
                         goblin_entity.health = goblin_entity.health - sword_equipped_entity.damage
                         if not GoblinHurtSound:play() then
@@ -162,6 +163,7 @@ end
 function Player_touches_goblin()
     for _, goblin_entity in ipairs(Enemies) do
         if isColliding(player_entity, goblin_entity) then
+            player_entity.isDamaged = true
             if Player_controls then
                 Character_hurt:play()
             end
@@ -199,22 +201,26 @@ function Draw_equipped_sword()
 end
 
 function Draw_player()
-    -- print(Character)
     local key = Character
     local frame = CurrentFrame
     if Attacking then
         key = "attack_" .. Character
         frame = CurrentAttackFrame
     end
-    love.graphics.draw(Spritesheets[key], Frames[key][frame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
-    - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    if player_entity.isDamaged or not Player_controls then
+        love.graphics.setColor(1, 0, 0)
+        love.graphics.draw(Spritesheets[key], Frames[key][frame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+        - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    else
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.draw(Spritesheets[key], Frames[key][frame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
+        - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)
+    end
 end
 
 function Attack_animation()
     if Equipped_sword and Attacking then
         local key = "sword_attack_" .. Character
-        print(key)
-        -- print(Character)
         if Character == "front" or Character == "back" then
             love.graphics.draw(Spritesheets[key], Frames[key][CurrentAttackFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y
             - Player_hitbox_y - sword_attack_offset_y , 0, ScaleFactor, ScaleFactor)
