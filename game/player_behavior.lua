@@ -25,9 +25,6 @@ local sword_equipped_offset_right_x = - 11
 local sword_attack_offset_y = - 17
 local attacking_model_offset_side = 45
 
--- misc
-local game_end = false
-
 function Update_dodge(dt)
 
     -- registers the dodge input
@@ -235,22 +232,23 @@ function Attack_animation()
 end
 
 function Player_death()
-    if player_entity.health <= 0 and not game_end then
+    if player_entity.health <= 0 and not GameEnd then
         BackgroundMusic:pause()
         Player_death_sound:play()
         Player_death_sound:setLooping(false)
         Player_controls = false
-        game_end = true
+        GameEnd = true
     end
 end
 
 function Draw_loss()
-love.graphics.setColor(1, 0, 0) -- Set color to red
-love.graphics.setFont(Font_death)
-        local text = "YOU LOSE"
-        local text_width = love.graphics.getFont():getWidth(text)
-        local text_height = love.graphics.getFont():getHeight(text)
-        local x = (love.graphics.getWidth() - text_width) / 2
-        local y = (love.graphics.getHeight() - text_height) / 2
-        love.graphics.print(text, x, y)
+    love.graphics.setColor(1, 0, 0) -- Set color to red
+    love.graphics.setFont(Font_death)
+            local text = "YOU LOSE"
+            local text_width = love.graphics.getFont():getWidth(text)
+            local text_height = love.graphics.getFont():getHeight(text)
+            local x = (love.graphics.getWidth() - text_width) / 2
+            local y = (love.graphics.getHeight() - text_height) / 2
+            love.graphics.print(text, x, y)
 end
+

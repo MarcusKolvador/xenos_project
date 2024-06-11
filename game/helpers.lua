@@ -91,3 +91,46 @@ function FlashRedTimer(dt, entity)
     end
 end
 
+function SpawnEnemies(dt)
+    local timeToDisplay = 2
+    if EnemiesSpawned < EnemiesPerWave then
+        NewWaveDisplayTimer = NewWaveDisplayTimer + dt
+        if NewWaveDisplayTimer < timeToDisplay then
+            NewWave = true
+        else
+            NewWave = false
+        end
+        GoblinRespawn(dt)
+    else
+        if #Enemies == 0 then
+            NextWave()
+            NewWave = true
+        end
+    end
+end
+
+function NextWave()
+    EnemiesSpawned = 0
+    Wave = Wave + 1
+    EnemiesPerWave = Wave * 5
+    SpawnInterval = SpawnInterval * 0.9
+    NewWaveDisplayTimer = 0
+end
+
+function StopLogic(dt)
+    if GameEnd then
+        DeathTimer = DeathTimer + dt
+    end
+end
+
+function Draw_wave_no()
+    love.graphics.setColor(0.7, 0.7, 0.7) -- Set color to red
+    love.graphics.setFont(Font_death)
+            local text = "Wave " .. Wave
+            local text_width = love.graphics.getFont():getWidth(text)
+            local text_height = love.graphics.getFont():getHeight(text)
+            local x = (love.graphics.getWidth() - text_width) / 2
+            local y = (love.graphics.getHeight() - text_height) / 2
+            love.graphics.print(text, x, y)
+end
+

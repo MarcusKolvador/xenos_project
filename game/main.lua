@@ -65,6 +65,12 @@ Wave = 1
 EnemiesPerWave = 5
 EnemiesSpawned = 0
 SpawnTimer = 0
+SpawnInterval = 2
+DeathTimer = 0
+Game_end = false
+NewWave = true
+NewWaveDisplayTimer = 0
+local gameEndCountdown = 10
 
 -- Load assets and initialize
 function love.load()
@@ -73,7 +79,6 @@ function love.load()
     -- Initialize the center of the map
     x, y = MapWidth / 2, MapHeight / 2
     -- Initialize entities
-    SpawnGoblin()
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
     player_entity = Player_entity:new(x, y, Spritesheets["front"], Player_hitbox_x, Player_hitbox_y, Player_entity_movespeed, Player_entity_health, kills, isDamaged)
     sword_equipped_entity = Sword_equipped_entity:new(0, 0, Spritesheets["sword_equipped"], 0, 0, Sword_equipped_entity_damage)  -- 0 hitbox as it is not yet equipped
@@ -97,8 +102,15 @@ function love.update(dt)
     -- Player movement logic
     Player_movement(dt)
     -- Goblin entity
+    SpawnEnemies(dt)
     if goblin_entity then
-        Goblin_move(dt)
+        if Player_controls then
+            Goblin_move(dt)
+        else
+            if DeathTimer <= gameEndCountdown then
+                Goblin_move(dt)
+            end
+        end
         for _, goblin_entity in ipairs(Enemies) do
             goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
         end
@@ -106,8 +118,10 @@ function love.update(dt)
         Attacking_hitbox_handler()
         Goblin_death()
     end
+    StopLogic(dt)
+
     -- Respawn goblin
-    GoblinRespawn(dt)
+    
     -- handle boundaries
     player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
     -- Handle player behavior
@@ -115,7 +129,8 @@ function love.update(dt)
     Attack_logic(dt)
     Pick_up_sword()
     Animation_updater(dt)
-    Player_death()
+    Player_death(dt)
+    -- print(#Enemies, EnemiesSpawned, EnemiesPerWave, SpawnTimer, Wave, SpawnInterval, DeathTimer)
 end
 
 -- Render the game
@@ -150,4 +165,11 @@ function love.draw()
     if not Player_controls then
         Draw_loss()
     end
+    if NewWave then
+        Draw_wave_no()
+    end
 end
+
+
+
+
