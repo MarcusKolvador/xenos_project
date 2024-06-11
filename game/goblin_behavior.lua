@@ -73,3 +73,12 @@ function Goblin_death()
     end
     Enemies = aliveGoblins
 end
+
+function GoblinRespawn(dt)
+    local spawnInterval = 2
+    SpawnTimer = SpawnTimer + dt
+    if SpawnTimer >= spawnInterval then
+        SpawnTimer = 0
+        SpawnGoblin()
+    end
+end

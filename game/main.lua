@@ -5,7 +5,7 @@ local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
 require("player_behavior")
 require("collide")
-require("spawn_enemies")
+require("goblin_behavior")
 require("helpers")
 require("audio")
 require("images")
@@ -14,55 +14,57 @@ FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
 FRAME_COUNT = 4
 local MOVE_SPEED = {normal = 150, dodge = 700}
--- Variables
-Spritesheets = {}
-Frames = {}
+-- Local variables
+local isDamaged = false
 local x, y
-Moving = false
-Character = "front"
-Goblin_direction = "front"
--- hitboxes
+local kills = 0
+-- Hitboxes
 Player_hitbox_x = 24
 Player_hitbox_y = 30
 Sword_hitbox_x = 16
 Sword_hitbox_y = 16
 Sword_equipped_hitbox_x = 30
 Sword_equipped_hitbox_y = 18
--- model offsets in regard to entity
+Goblin_hitbox_x = 20
+Goblin_hitbox_y = 20
+-- Model offsets in regard to entity
 Goblin_hitbox_offset_x = 14
 Goblin_hitbox_offset_y = 33
 Player_hitbox_offset_x = 4
 Player_hitbox_offset_y = -8
--- Global variables
-local isDamaged = false
+-- Player state
+Player_controls = true
+Moving = false
+Equipped_sword = false
+Attacking = false
+Attack_finished = true
+Dodge = false
+Dodge_up = false
+-- Stats
+Player_entity_movespeed = 100
+Goblin_entity_movespeed = 30
+Goblin_entity_health = 50
+Player_entity_health = 100
+Sword_equipped_entity_damage = 30
+Goblin_entity_damage = 30
+-- Draw variables
+Character = "front"
+Goblin_direction = "front"
+MapWidth, MapHeight = love.graphics.getWidth(), love.graphics.getHeight()
+ScaleFactor = 3
 FlashTimer = 0
 CurrentFrame = 1
 CurrentAttackFrame = 1
 CurrentGoblinFrame = 1
 Hitbox_debug = false
-Dodge = false
-Dodge_up = false
-ScaleFactor = 3
-MapWidth, MapHeight = love.graphics.getWidth(), love.graphics.getHeight()
-Goblin_hitbox_x = 20
-Goblin_hitbox_y = 20
-Player_entity_movespeed = 100
-Goblin_entity_movespeed = 30
-Equipped_sword = false
-Attacking = false
-Attack_finished = true
-Goblin_entity_health = 50
-Player_entity_health = 100
-Sword_equipped_entity_damage = 30
-Goblin_entity_damage = 30
-local kills = 0
 Enemies = {}
-local spawnTimer = 0
-local spawnInterval = 2
-Player_controls = true
-
-
-
+Spritesheets = {}
+Frames = {}
+-- Gamestate variables
+Wave = 1
+EnemiesPerWave = 5
+EnemiesSpawned = 0
+SpawnTimer = 0
 
 -- Load assets and initialize
 function love.load()
@@ -79,6 +81,7 @@ end
 
 -- Update game state
 function love.update(dt)
+    -- Flash if damaged
     FlashRedTimer(dt, player_entity)
     if goblin_entity then
         for _, goblin_entity in ipairs(Enemies) do
@@ -91,7 +94,6 @@ function love.update(dt)
     -- Constrain player within map boundaries
     x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
     y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
-
     -- Player movement logic
     Player_movement(dt)
     -- Goblin entity
@@ -105,11 +107,7 @@ function love.update(dt)
         Goblin_death()
     end
     -- Respawn goblin
-    spawnTimer = spawnTimer + dt
-    if spawnTimer >= spawnInterval then 
-        spawnTimer = 0
-        SpawnGoblin()
-    end
+    GoblinRespawn(dt)
     -- handle boundaries
     player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
     -- Handle player behavior
