@@ -1,5 +1,3 @@
-local health_sprite_offset_x = 24
-
 function Load_images()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     background = love.graphics.newImage("assets/grass.png")

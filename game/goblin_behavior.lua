@@ -3,19 +3,20 @@ local Goblin_entity = Entity.Goblin_entity
 local Health_entity = Entity.Health_entity
 local health_drop_probability = 0.3
 local kills_to_drop_healing = 10
+local spawn_distance = 50
 
-function SpawnGoblin()
-    local middle_x_min = MapWidth * 0.4
-    local middle_x_max = MapWidth * 0.6
-    local middle_y_min = MapHeight * 0.4
-    local middle_y_max = MapHeight * 0.6
+function SpawnGoblin(player_entity)
+    local middle_x_min = player_entity.x - spawn_distance
+    local middle_x_max = player_entity.x + spawn_distance
+    local middle_y_min = player_entity.y - spawn_distance
+    local middle_y_max = player_entity.y + spawn_distance
 
     repeat
-        goblin_x = math.random(0, MapWidth - 60)
-        goblin_y = math.random(0, MapHeight - 60)
-    until not (goblin_x >= middle_x_min and goblin_x <= middle_x_max and goblin_y >= middle_y_min and goblin_y <= middle_y_max)
+        Goblin_x = math.random(0, MapWidth - 60)
+        Goblin_y = math.random(0, MapHeight - 60)
+    until not (Goblin_x >= middle_x_min and Goblin_x <= middle_x_max and Goblin_y >= middle_y_min and Goblin_y <= middle_y_max)
 
-    goblin_entity = Goblin_entity:new(goblin_x, goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed, Goblin_entity_health, Goblin_entity_damage, Goblin_direction)
+    goblin_entity = Goblin_entity:new(Goblin_x, Goblin_y, goblin_sprite, Goblin_hitbox_x, Goblin_hitbox_y, Goblin_entity_movespeed, Goblin_entity_health, Goblin_entity_damage, Goblin_direction)
     table.insert(Enemies, goblin_entity)
 end
 
@@ -81,7 +82,7 @@ function GoblinRespawn(dt)
     SpawnTimer = SpawnTimer + dt
     if SpawnTimer >= SpawnInterval then
         SpawnTimer = 0
-        SpawnGoblin()
+        SpawnGoblin(player_entity)
         EnemiesSpawned = EnemiesSpawned + 1
     end
 end

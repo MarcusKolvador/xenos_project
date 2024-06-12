@@ -3,6 +3,7 @@ local FRAME_TIME = 0.2
 local ATTACK_FRAME_TIME = 0.05
 local elapsedTimeAttack = 0
 local elapsedTimeGoblin = 0
+local health_sprite_offset_x = 24
 
 -- Hitboxes
 function love.keypressed(key)
