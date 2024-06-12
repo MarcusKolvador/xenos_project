@@ -18,9 +18,9 @@ function Load_images()
         sword_attack_back = love.graphics.newImage("assets/attack_back.png"),
         sword_attack_front = love.graphics.newImage("assets/attack_front.png"),
         -- Goblin move sprites
-        goblin_left = love.graphics.newImage("assets/goblin_front.png"),
-        goblin_right = love.graphics.newImage("assets/goblin_front.png"),
-        goblin_back = love.graphics.newImage("assets/goblin_front.png"),
+        goblin_left = love.graphics.newImage("assets/goblin_left.png"),
+        goblin_right = love.graphics.newImage("assets/goblin_right.png"),
+        goblin_back = love.graphics.newImage("assets/goblin_back.png"),
         goblin_front = love.graphics.newImage("assets/goblin_front.png"),
     }
     -- Item sprites
