@@ -14,7 +14,7 @@ math.randomseed(os.time())
 FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
 FRAME_COUNT = 4
-local MOVE_SPEED = {normal = 150, dodge = 700}
+MOVE_SPEED = {normal = 150, dodge = 700}
 -- Local variables
 local isDamaged = false
 local x, y
@@ -78,7 +78,7 @@ local gameEndCountdown = 10
 function love.load()
     Load_sounds()
     Load_images()
-    -- Initialize the center of the map
+    -- Initialize the center of the map for the player spawn
     x, y = MapWidth / 2, MapHeight / 2
     -- Initialize entities
     sword_entity = Sword_entity:new(MapWidth / 2 - MapWidth / 4, MapHeight / 2 - MapHeight / 4, sword_sprite, Sword_hitbox_x, Sword_hitbox_y)
@@ -88,21 +88,13 @@ end
 
 -- Update game state
 function love.update(dt)
-    -- Flash if damaged
-    FlashRedTimer(dt, player_entity)
-    if goblin_entity then
-        for _, goblin_entity in ipairs(Enemies) do
-            FlashRedTimer(dt, goblin_entity)
-        end
-    end
+    FlashIfDamaged(dt)
     -- set speed depending on if dodging or not
-    player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
-    Moving = false
+    
     -- Constrain player within map boundaries
     x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
     y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
-    -- Player movement logic
-    Player_movement(dt)
+    Player_movement_logic(dt)
     -- Goblin entity
     SpawnEnemies(dt)
     if goblin_entity then

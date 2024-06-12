@@ -95,7 +95,11 @@ function Attack_logic(dt)
     end
 end
 
-function Player_movement(dt)
+function Player_movement_logic(dt)
+    -- set player speed and default state
+    player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
+    Moving = false
+    -- handle movement inputs
     if Player_controls then
         if love.keyboard.isDown('s') then
             Character = "front"

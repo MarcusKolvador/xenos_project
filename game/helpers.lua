@@ -150,3 +150,12 @@ function IsColliding(a, b)
         return false
     end
 end
+
+function FlashIfDamaged(dt)
+    FlashRedTimer(dt, player_entity)
+    if goblin_entity then
+        for _, goblin_entity in ipairs(Enemies) do
+            FlashRedTimer(dt, goblin_entity)
+        end
+    end
+end
