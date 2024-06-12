@@ -4,6 +4,13 @@ local ATTACK_FRAME_TIME = 0.05
 local elapsedTimeAttack = 0
 local elapsedTimeGoblin = 0
 
+-- Hitboxes
+function love.keypressed(key)
+    if key == "k" then
+        Hitbox_debug = not Hitbox_debug
+    end
+end
+
 function DrawHitboxes()
     if Hitbox_debug then
         DrawEntityHitbox(sword_entity)
@@ -22,11 +29,7 @@ function DrawEntityHitbox(entity)
     love.graphics.rectangle("line", entity.x - FRAME_WIDTH / 2, entity.y - FRAME_HEIGHT / 2, entity.hitboxWidth * ScaleFactor, entity.hitboxHeight * ScaleFactor)
 end
 
-function love.keypressed(key)
-    if key == "k" then
-        Hitbox_debug = not Hitbox_debug
-    end
-end
+-- Misc logic
 
 function Boundary_handler(x, y)
     local minX, minY = 0, 0
@@ -84,7 +87,14 @@ function Animation_updater(dt)
     end
 end
 
-
+function FlashIfDamaged(dt)
+    FlashRedTimer(dt, player_entity)
+    if goblin_entity then
+        for _, goblin_entity in ipairs(Enemies) do
+            FlashRedTimer(dt, goblin_entity)
+        end
+    end
+end
 
 function FlashRedTimer(dt, entity)
     local interval = 0.3
@@ -127,17 +137,6 @@ function GameEndCountdown(dt)
     end
 end
 
-function Draw_wave_no()
-    love.graphics.setColor(0.7, 0.7, 0.7) -- Set color to red
-    love.graphics.setFont(Font_death)
-            local text = "Wave " .. Wave
-            local text_width = love.graphics.getFont():getWidth(text)
-            local text_height = love.graphics.getFont():getHeight(text)
-            local x = (love.graphics.getWidth() - text_width) / 2
-            local y = (love.graphics.getHeight() - text_height) / 2
-            love.graphics.print(text, x, y)
-end
-
 function IsColliding(a, b)
     
     -- Update positions
@@ -152,14 +151,7 @@ function IsColliding(a, b)
     end
 end
 
-function FlashIfDamaged(dt)
-    FlashRedTimer(dt, player_entity)
-    if goblin_entity then
-        for _, goblin_entity in ipairs(Enemies) do
-            FlashRedTimer(dt, goblin_entity)
-        end
-    end
-end
+-- Draw
 
 function Draw_sword()
     if not Equipped_sword then
@@ -179,4 +171,15 @@ function Draw_background()
             love.graphics.draw(background, bg_x * background:getWidth() * ScaleFactor, bg_y * background:getHeight() * ScaleFactor, 0, ScaleFactor)
         end
     end
+end
+
+function Draw_wave_no()
+    love.graphics.setColor(0.7, 0.7, 0.7) -- Set color to red
+    love.graphics.setFont(Font_death)
+            local text = "Wave " .. Wave
+            local text_width = love.graphics.getFont():getWidth(text)
+            local text_height = love.graphics.getFont():getHeight(text)
+            local x = (love.graphics.getWidth() - text_width) / 2
+            local y = (love.graphics.getHeight() - text_height) / 2
+            love.graphics.print(text, x, y)
 end
