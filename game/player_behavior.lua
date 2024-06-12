@@ -179,6 +179,29 @@ function Player_touches_goblin()
     end
 end
 
+function Player_touches_health()
+    local remaining_drops = {}
+
+    for _, health_entity in ipairs(Drops) do
+        if isColliding(player_entity, health_entity) then
+            -- player_entity.isDamaged = true <- make a healing effect?
+            -- Character_hurt:play() <- heal sound?
+            if player_entity.health < 100 then
+                player_entity.health = player_entity.health + health_entity.healing
+                if player_entity.health > 100 then
+                    player_entity.health = 100
+                end
+            else
+                table.insert(remaining_drops, health_entity)
+            end
+        else
+            table.insert(remaining_drops, health_entity)
+        end
+    end
+
+    Drops = remaining_drops
+end
+
 function Draw_dodge_effect()
     if not Dodge_up then
         love.graphics.draw(Spritesheets["dodge_ui"], Frames["dodge_ui"][CurrentFrame], player_entity.x - Player_hitbox_x - Player_hitbox_offset_x, player_entity.y - Player_hitbox_y - Player_hitbox_offset_y, 0, ScaleFactor, ScaleFactor)

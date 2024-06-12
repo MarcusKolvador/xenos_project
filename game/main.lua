@@ -3,12 +3,15 @@ local Entity = require("entity")
 local Player_entity = Entity.Player_entity
 local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
+local Health_entity = Entity.Health_entity
 require("player_behavior")
 require("collide")
 require("goblin_behavior")
 require("helpers")
 require("audio")
 require("images")
+-- Seed rng
+math.randomseed(os.time())
 -- Constants
 FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
@@ -58,6 +61,7 @@ CurrentAttackFrame = 1
 CurrentGoblinFrame = 1
 Hitbox_debug = false
 Enemies = {}
+Drops = {}
 Spritesheets = {}
 Frames = {}
 -- Gamestate variables
@@ -130,6 +134,7 @@ function love.update(dt)
     Pick_up_sword()
     Animation_updater(dt)
     Player_death(dt)
+    Player_touches_health()
     -- print(#Enemies, EnemiesSpawned, EnemiesPerWave, SpawnTimer, Wave, SpawnInterval, DeathTimer)
 end
 
@@ -142,6 +147,9 @@ function love.draw()
     -- Draw goblin
     if goblin_entity then
         Draw_goblin()
+    end
+    if health_entity then
+        Draw_health()
     end
     -- Draw player
     if Character ~= "back" then

@@ -69,11 +69,23 @@ function Goblin_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, movespeed, h
     return goblin_entity
 end
 
+local Health_entity = setmetatable({}, { __index = Entity })
+
+function Health_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, healing)
+    local health_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
+    health_entity.hitboxWidth = hitboxWidth
+    health_entity.hitboxHeight = hitboxHeight
+    health_entity.healing = healing
+    setmetatable(health_entity, Health_entity)
+    return health_entity
+end
+
 -- Return the Entity class and its subclasses
 return {
     Entity = Entity,
     Sword_entity = Sword_entity,
     Player_entity = Player_entity,
     Goblin_entity = Goblin_entity,
-    Sword_equipped_entity = Sword_equipped_entity
+    Health_entity = Health_entity,
+    Sword_equipped_entity = Sword_equipped_entity,
 }

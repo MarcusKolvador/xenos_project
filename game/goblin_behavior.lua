@@ -1,8 +1,10 @@
 local Entity = require("entity")
 local Goblin_entity = Entity.Goblin_entity
+local Health_entity = Entity.Health_entity
+local health_drop_probability = 0.3
+local kills_to_drop_healing = 10
 
 function SpawnGoblin()
-    math.randomseed(os.time())
     local middle_x_min = MapWidth * 0.4
     local middle_x_max = MapWidth * 0.6
     local middle_y_min = MapHeight * 0.4
@@ -65,6 +67,7 @@ function Goblin_death()
         if goblin_entity.health <= 0 then
             GoblinHurtSound:stop()
             Goblin_death_sound:play()
+            DropHealth(goblin_entity)
             goblin_entity = nil
             player_entity.kills = player_entity.kills + 1
         else
@@ -80,5 +83,14 @@ function GoblinRespawn(dt)
         SpawnTimer = 0
         SpawnGoblin()
         EnemiesSpawned = EnemiesSpawned + 1
+    end
+end
+
+function DropHealth(goblin_entity)
+    local randomNumber = math.random()
+    if randomNumber < health_drop_probability and player_entity.kills > kills_to_drop_healing then
+        health_entity = Health_entity:new(goblin_entity.x, goblin_entity.y, health_sprite, Sword_hitbox_x, Sword_hitbox_y, 30)
+        print(health_entity.healing)
+        table.insert(Drops, health_entity)
     end
 end

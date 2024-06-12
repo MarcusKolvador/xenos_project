@@ -2,7 +2,6 @@ local Entity = require("entity")
 local Goblin_entity = Entity.Goblin_entity
 
 function SpawnGoblin()
-    math.randomseed(os.time())
     local middle_x_min = MapWidth * 0.4
     local middle_x_max = MapWidth * 0.6
     local middle_y_min = MapHeight * 0.4
@@ -41,15 +40,16 @@ end
 
 function Goblin_death()
     local aliveGoblins = {}
+
     for _, goblin_entity in ipairs(Enemies) do
         if goblin_entity.health <= 0 then
             GoblinHurtSound:stop()
             Goblin_death_sound:play()
-            goblin_entity = nil
             player_entity.kills = player_entity.kills + 1
         else
             table.insert(aliveGoblins, goblin_entity)
         end
     end
+
     Enemies = aliveGoblins
 end

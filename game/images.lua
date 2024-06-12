@@ -1,3 +1,5 @@
+local health_sprite_offset_x = 24
+
 function Load_images()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     background = love.graphics.newImage("assets/grass.png")
@@ -33,6 +35,8 @@ function Load_images()
     goblin_sprite = love.graphics.newImage("assets/goblin.png")
     -- Character Sprite
     character_sprite = love.graphics.newImage("assets/avatar.png")
+    -- Health drop Sprite
+    health_sprite = love.graphics.newImage("assets/health_sprite.png")
     -- Fonts
     Font = love.graphics.newFont("assets/Lobster-Regular.ttf", 22)
     Font_death = love.graphics.newFont("assets/Lobster-Regular.ttf", 64)
@@ -55,6 +59,12 @@ end
 
 function Draw_sword()
     if not Equipped_sword then
-        love.graphics.draw(sword_sprite, sword_entity.x - Sword_hitbox_x, sword_entity.y - Sword_hitbox_y, 0, ScaleFactor / 2, ScaleFactor / 2)
+        love.graphics.draw(sword_sprite, sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_WIDTH / 2, 0, ScaleFactor / 2, ScaleFactor / 2)
+    end
+end
+
+function Draw_health()
+    for _, health_entity in ipairs(Drops) do
+        love.graphics.draw(health_sprite, health_entity.x - FRAME_WIDTH / 2 - health_sprite_offset_x, health_entity.y - FRAME_HEIGHT / 2, 0, ScaleFactor, ScaleFactor)
     end
 end
