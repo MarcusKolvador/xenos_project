@@ -14,7 +14,6 @@ math.randomseed(os.time())
 FRAME_WIDTH = 32
 FRAME_HEIGHT = 32
 FRAME_COUNT = 4
-MOVE_SPEED = {normal = 150, dodge = 700}
 -- Local variables
 local isDamaged = false
 local x, y
@@ -72,7 +71,7 @@ DeathTimer = 0
 Game_end = false
 NewWave = true
 NewWaveDisplayTimer = 0
-local gameEndCountdown = 10
+local gameEndCountdownDuration = 10
 
 -- Load assets and initialize
 function love.load()
@@ -88,45 +87,34 @@ end
 
 -- Update game state
 function love.update(dt)
+    -- General functions
     FlashIfDamaged(dt)
-    -- set speed depending on if dodging or not
-    
-    -- Constrain player within map boundaries
-    x = math.max(0, math.min(x, MapWidth - FRAME_WIDTH * ScaleFactor))
-    y = math.max(0, math.min(y, MapHeight - FRAME_HEIGHT * ScaleFactor))
-    Player_movement_logic(dt)
-    -- Goblin entity
-    SpawnEnemies(dt)
-    if goblin_entity then
-        if Player_controls then
-            Goblin_move(dt)
-        else
-            if DeathTimer <= gameEndCountdown then
-                Goblin_move(dt)
-            end
-        end
-        for _, goblin_entity in ipairs(Enemies) do
-            goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
-        end
-        Player_touches_goblin(dt)
-        Attacking_hitbox_handler()
-        Goblin_death()
-    end
-    StopLogic(dt)
-
-    -- Respawn goblin
-    
-    -- handle boundaries
-    player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
-    -- Handle player behavior
-    Update_dodge(dt)
-    Attack_logic(dt)
-    Pick_up_sword()
     Animation_updater(dt)
+    GameEndCountdown(dt)
+    -- Player functions
+    Player_movement_logic(dt)
+    Player_attack_logic(dt)
+    Dodge_logic(dt)
     Player_death(dt)
     Player_touches_health()
-    -- print(#Enemies, EnemiesSpawned, EnemiesPerWave, SpawnTimer, Wave, SpawnInterval, DeathTimer)
+    Pick_up_sword()
+    SpawnEnemies(dt)
+    -- Goblin functions
+    if Player_controls then
+        Goblin_move(dt)
+    else
+        if DeathTimer <= gameEndCountdownDuration then
+            Goblin_move(dt)
+        end
+    end
+    for _, goblin_entity in ipairs(Enemies) do
+        goblin_entity.x, goblin_entity.y = Boundary_handler(goblin_entity.x, goblin_entity.y)
+    end
+    Player_touches_goblin()
+    Attacking_hitbox_handler()
+    Goblin_death()
 end
+
 
 -- Render the game
 function love.draw()

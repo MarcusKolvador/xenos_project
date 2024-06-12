@@ -25,7 +25,39 @@ local sword_equipped_offset_right_x = - 11
 local sword_attack_offset_y = - 17
 local attacking_model_offset_side = 45
 
-function Update_dodge(dt)
+-- speed
+local MOVE_SPEED = {normal = 150, dodge = 700}
+
+function Player_movement_logic(dt)
+    -- set player speed and default state
+    player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
+    Moving = false
+    -- handle boundaries
+    player_entity.x, player_entity.y = Boundary_handler(player_entity.x, player_entity.y)
+    -- handle movement inputs
+    if Player_controls then
+        if love.keyboard.isDown('s') then
+            Character = "front"
+            player_entity.y = player_entity.y + player_entity.movespeed * dt
+            Moving = true
+        elseif love.keyboard.isDown('w') then
+            Character = "back"
+            player_entity.y = player_entity.y - player_entity.movespeed * dt
+            Moving = true
+        end
+        if love.keyboard.isDown('a') then
+            Character = "left"
+            player_entity.x = player_entity.x - player_entity.movespeed * dt
+            Moving = true
+        elseif love.keyboard.isDown('d') then
+            Character = "right"
+            player_entity.x = player_entity.x + player_entity.movespeed * dt
+            Moving = true
+        end
+    end
+end
+
+function Dodge_logic(dt)
 
     -- registers the dodge input
     Dodge = love.keyboard.isDown('space')
@@ -49,7 +81,7 @@ function Update_dodge(dt)
     end
 end
 
-function Attack_logic(dt)
+function Player_attack_logic(dt)
     if love.mouse.isDown(1) and Player_controls then
         attack_timer = attack_timer + dt
         if attack_timer < attack_duration then
@@ -92,33 +124,6 @@ function Attack_logic(dt)
     else
         Attacking = false
         attack_timer = 0
-    end
-end
-
-function Player_movement_logic(dt)
-    -- set player speed and default state
-    player_entity.movespeed = Moving and (Dodge and Dodge_up and MOVE_SPEED.dodge or MOVE_SPEED.normal) or 0
-    Moving = false
-    -- handle movement inputs
-    if Player_controls then
-        if love.keyboard.isDown('s') then
-            Character = "front"
-            player_entity.y = player_entity.y + player_entity.movespeed * dt
-            Moving = true
-        elseif love.keyboard.isDown('w') then
-            Character = "back"
-            player_entity.y = player_entity.y - player_entity.movespeed * dt
-            Moving = true
-        end
-        if love.keyboard.isDown('a') then
-            Character = "left"
-            player_entity.x = player_entity.x - player_entity.movespeed * dt
-            Moving = true
-        elseif love.keyboard.isDown('d') then
-            Character = "right"
-            player_entity.x = player_entity.x + player_entity.movespeed * dt
-            Moving = true
-        end
     end
 end
 

@@ -120,7 +120,7 @@ function NextWave()
     NewWaveDisplayTimer = 0
 end
 
-function StopLogic(dt)
+function GameEndCountdown(dt)
     if GameEnd then
         DeathTimer = DeathTimer + dt
     end
