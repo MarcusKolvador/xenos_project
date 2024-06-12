@@ -4,7 +4,6 @@ local Player_entity = Entity.Player_entity
 local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
 require("player_behavior")
-require("collide")
 require("spawn_enemies")
 require("helpers")
 require("audio")
