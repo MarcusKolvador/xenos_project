@@ -11,10 +11,6 @@ function Entity:new(x, y, sprite)
     return entity
 end
 
-function Entity:draw()
-    love.graphics.draw(self.sprite, self.x, self.y)
-end
-
 -- Sword entity inheriting from Entity
 local Sword_entity = setmetatable({}, { __index = Entity })
 Sword_entity.__index = Sword_entity
