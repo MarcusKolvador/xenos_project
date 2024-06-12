@@ -5,7 +5,7 @@ local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
 require("player_behavior")
 require("goblin_behavior")
-require("helpers")
+require("misc")
 require("audio")
 require("images")
 -- Seed rng
@@ -125,8 +125,8 @@ function love.draw()
     Draw_health()
     Draw_player()
     Draw_equipped_sword()
-    Draw_hitboxes()
     Draw_dodge_effect()
+    DrawHitboxes()
     -- UI
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(Font)

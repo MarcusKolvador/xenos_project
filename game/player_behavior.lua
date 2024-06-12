@@ -5,12 +5,11 @@ local dodge_cooldown = 0
 local dodge_cooldown_period = 5
 
 -- weapon hitbox offsets
-local weapon_offset_left = 40
-local weapon_offset_right = 37
-local weapon_offset_front = 45
-local weapon_offset_back = - 20
-local weapon_offset_vertical = 15
-local weapon_offset_horizontal = 22
+local weapon_hitbox_offset_left = 40
+local weapon_hitbox_offset_right = 58
+local weapon_hitbox_offset_front = 45
+local weapon_hitbox_offset_back = - 20
+local weapon_hitbox_offset_horizontal = 9
 
 -- enemy knockbacks
 local goblin_knockback = 30
@@ -133,21 +132,21 @@ function Attacking_hitbox_handler()
             sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_y
             sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_x
             if Character == "left" then
-                sword_equipped_entity.x = player_entity.x - weapon_offset_left
-                sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+                sword_equipped_entity.x = player_entity.x - weapon_hitbox_offset_left
+                sword_equipped_entity.y = player_entity.y
             elseif Character == "right" then
-                sword_equipped_entity.x = player_entity.x + weapon_offset_right
-                sword_equipped_entity.y = player_entity.y - weapon_offset_vertical
+                sword_equipped_entity.x = player_entity.x + weapon_hitbox_offset_right
+                sword_equipped_entity.y = player_entity.y
         end
         else
             sword_equipped_entity.hitboxWidth = Sword_equipped_hitbox_x
             sword_equipped_entity.hitboxHeight = Sword_equipped_hitbox_y
             if Character == "front" then
-                sword_equipped_entity.y = player_entity.y + weapon_offset_front
-                sword_equipped_entity.x = player_entity.x - weapon_offset_horizontal
+                sword_equipped_entity.y = player_entity.y + weapon_hitbox_offset_front
+                sword_equipped_entity.x = player_entity.x - weapon_hitbox_offset_horizontal
             elseif Character == "back" then
-                sword_equipped_entity.y = player_entity.y + weapon_offset_back
-                sword_equipped_entity.x = player_entity.x - weapon_offset_horizontal
+                sword_equipped_entity.y = player_entity.y + weapon_hitbox_offset_back
+                sword_equipped_entity.x = player_entity.x - weapon_hitbox_offset_horizontal
             end
         end
     else

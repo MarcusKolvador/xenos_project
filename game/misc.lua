@@ -4,16 +4,22 @@ local ATTACK_FRAME_TIME = 0.05
 local elapsedTimeAttack = 0
 local elapsedTimeGoblin = 0
 
-function debug()
-    love.graphics.rectangle("line", sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_HEIGHT / 2, sword_entity.hitboxWidth * ScaleFactor, sword_entity.hitboxHeight * ScaleFactor)
-    love.graphics.rectangle("line", sword_equipped_entity.x, sword_equipped_entity.y, sword_equipped_entity.hitboxWidth * ScaleFactor, sword_equipped_entity.hitboxHeight * ScaleFactor)
-    for _, goblin_entity in ipairs(Enemies) do
-        love.graphics.rectangle("line", goblin_entity.x - FRAME_WIDTH / 2, goblin_entity.y  - FRAME_HEIGHT / 2, Goblin_hitbox_x * ScaleFactor, Goblin_hitbox_y * ScaleFactor)
+function DrawHitboxes()
+    if Hitbox_debug then
+        DrawEntityHitbox(sword_entity)
+        DrawEntityHitbox(sword_equipped_entity)
+        for _, goblin_entity in ipairs(Enemies) do
+            DrawEntityHitbox(goblin_entity)
+        end
+        DrawEntityHitbox(player_entity)
+        for _, health_entity in ipairs(Drops) do
+            DrawEntityHitbox(health_entity)
+        end
     end
-    love.graphics.rectangle("line", player_entity.x - FRAME_WIDTH / 2, player_entity.y - FRAME_HEIGHT / 2, Player_hitbox_x * ScaleFactor, Player_hitbox_y * ScaleFactor)
-    for _, health_entity in ipairs(Drops) do
-        love.graphics.rectangle("line", health_entity.x - FRAME_WIDTH / 2, health_entity.y - FRAME_HEIGHT / 2, Sword_hitbox_x * ScaleFactor, Sword_hitbox_y * ScaleFactor)
-    end
+end
+
+function DrawEntityHitbox(entity)
+    love.graphics.rectangle("line", entity.x - FRAME_WIDTH / 2, entity.y - FRAME_HEIGHT / 2, entity.hitboxWidth * ScaleFactor, entity.hitboxHeight * ScaleFactor)
 end
 
 function love.keypressed(key)
@@ -78,12 +84,7 @@ function Animation_updater(dt)
     end
 end
 
-function Draw_hitboxes()
-    -- Draw hitboxes
-    if Hitbox_debug == true then
-        debug()
-    end
-end
+
 
 function FlashRedTimer(dt, entity)
     local interval = 0.3
@@ -156,6 +157,26 @@ function FlashIfDamaged(dt)
     if goblin_entity then
         for _, goblin_entity in ipairs(Enemies) do
             FlashRedTimer(dt, goblin_entity)
+        end
+    end
+end
+
+function Draw_sword()
+    if not Equipped_sword then
+        love.graphics.draw(sword_sprite, sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_WIDTH / 2, 0, ScaleFactor / 2, ScaleFactor / 2)
+    end
+end
+
+function Draw_health()
+    for _, health_entity in ipairs(Drops) do
+        love.graphics.draw(health_sprite, health_entity.x - FRAME_WIDTH / 2 - health_sprite_offset_x, health_entity.y - FRAME_HEIGHT / 2, 0, ScaleFactor, ScaleFactor)
+    end
+end
+
+function Draw_background()
+    for bg_y = 0, love.graphics.getHeight() / (background:getHeight() * ScaleFactor) do
+        for bg_x = 0, love.graphics.getWidth() / (background:getWidth() * ScaleFactor) do
+            love.graphics.draw(background, bg_x * background:getWidth() * ScaleFactor, bg_y * background:getHeight() * ScaleFactor, 0, ScaleFactor)
         end
     end
 end

@@ -48,23 +48,3 @@ function Load_images()
         end
     end
 end
-
-function Draw_background()
-    for bg_y = 0, love.graphics.getHeight() / (background:getHeight() * ScaleFactor) do
-        for bg_x = 0, love.graphics.getWidth() / (background:getWidth() * ScaleFactor) do
-            love.graphics.draw(background, bg_x * background:getWidth() * ScaleFactor, bg_y * background:getHeight() * ScaleFactor, 0, ScaleFactor)
-        end
-    end
-end
-
-function Draw_sword()
-    if not Equipped_sword then
-        love.graphics.draw(sword_sprite, sword_entity.x - FRAME_WIDTH / 2, sword_entity.y - FRAME_WIDTH / 2, 0, ScaleFactor / 2, ScaleFactor / 2)
-    end
-end
-
-function Draw_health()
-    for _, health_entity in ipairs(Drops) do
-        love.graphics.draw(health_sprite, health_entity.x - FRAME_WIDTH / 2 - health_sprite_offset_x, health_entity.y - FRAME_HEIGHT / 2, 0, ScaleFactor, ScaleFactor)
-    end
-end
