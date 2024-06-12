@@ -47,6 +47,9 @@ Goblin_entity_health = 50
 Player_entity_health = 100
 Sword_equipped_entity_damage = 30
 Goblin_entity_damage = 30
+-- health item
+Time_to_pick_up = 5
+Health_item_timer = 0
 -- Draw variables
 Character = "front"
 Goblin_direction = "front"
@@ -96,7 +99,7 @@ function love.update(dt)
     Player_attack_logic(dt)
     Dodge_logic(dt)
     Player_death(dt)
-    Player_touches_health()
+    Player_touches_health(dt)
     Pick_up_sword()
     SpawnEnemies(dt)
     -- Goblin functions

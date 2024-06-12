@@ -187,24 +187,25 @@ function Player_touches_goblin()
     end
 end
 
-function Player_touches_health()
+function Player_touches_health(dt)
     local remaining_drops = {}
 
     for _, health_entity in ipairs(Drops) do
+        health_entity.timer = health_entity.timer + dt
         if IsColliding(player_entity, health_entity) then
-            -- player_entity.isDamaged = true <- make a healing effect?
-            -- Character_hurt:play() <- heal sound?
             if player_entity.health < 100 then
                 player_entity.health = player_entity.health + health_entity.healing
                 if player_entity.health > 100 then
                     player_entity.health = 100
                 end
-            else
-                table.insert(remaining_drops, health_entity)
             end
-        else
+            -- Player has picked up the health entity, so don't add it to remaining drops
+        elseif health_entity.timer <= Time_to_pick_up then
+            -- If the player is not colliding with the health entity,
+            -- and the timer hasn't exceeded the pick-up time, keep the health entity
             table.insert(remaining_drops, health_entity)
         end
+        -- If the timer exceeds the pick-up time, don't add the health entity to remaining drops
     end
 
     Drops = remaining_drops

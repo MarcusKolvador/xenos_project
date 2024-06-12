@@ -71,11 +71,12 @@ end
 
 local Health_entity = setmetatable({}, { __index = Entity })
 
-function Health_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, healing)
+function Health_entity:new(x, y, sprite, hitboxWidth, hitboxHeight, healing, timer)
     local health_entity = Entity.new(self, x, y, sprite)  -- Call the Entity constructor
     health_entity.hitboxWidth = hitboxWidth
     health_entity.hitboxHeight = hitboxHeight
     health_entity.healing = healing
+    health_entity.timer = timer
     setmetatable(health_entity, Health_entity)
     return health_entity
 end

@@ -1,9 +1,10 @@
 local Entity = require("entity")
 local Goblin_entity = Entity.Goblin_entity
 local Health_entity = Entity.Health_entity
-local health_drop_probability = 0.3
-local kills_to_drop_healing = 10
-local spawn_distance = 50
+local health_drop_probability = 1 
+local kills_to_drop_healing = 0
+local spawn_distance = 5
+local healing_value = 30
 
 function SpawnGoblin(player_entity)
     local middle_x_min = player_entity.x - spawn_distance
@@ -90,8 +91,7 @@ end
 function DropHealth(goblin_entity)
     local randomNumber = math.random()
     if randomNumber < health_drop_probability and player_entity.kills > kills_to_drop_healing then
-        health_entity = Health_entity:new(goblin_entity.x, goblin_entity.y, health_sprite, Sword_hitbox_x, Sword_hitbox_y, 30)
-        print(health_entity.healing)
+        health_entity = Health_entity:new(goblin_entity.x, goblin_entity.y, health_sprite, Sword_hitbox_x, Sword_hitbox_y, healing_value, Health_item_timer)
         table.insert(Drops, health_entity)
     end
 end
