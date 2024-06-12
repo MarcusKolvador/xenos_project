@@ -1,8 +1,8 @@
 local Entity = require("entity")
 local Goblin_entity = Entity.Goblin_entity
 local Health_entity = Entity.Health_entity
-local health_drop_probability = 1 
-local kills_to_drop_healing = 0
+local health_drop_probability = 0.2
+local kills_to_drop_healing = 10
 local spawn_distance = 5
 local healing_value = 30
 
