@@ -3,9 +3,7 @@ local Entity = require("entity")
 local Player_entity = Entity.Player_entity
 local Sword_entity = Entity.Sword_entity
 local Sword_equipped_entity = Entity.Sword_equipped_entity
-local Health_entity = Entity.Health_entity
 require("player_behavior")
-require("collide")
 require("goblin_behavior")
 require("helpers")
 require("audio")
@@ -140,41 +138,27 @@ end
 
 -- Render the game
 function love.draw()
-    -- Draw background
+    -- Draw sprites
     Draw_background()
-    -- draws sword_entity if not equipped
     Draw_sword()
-    -- Draw goblin
-    if goblin_entity then
-        Draw_goblin()
-    end
-    if health_entity then
-        Draw_health()
-    end
-    -- Draw player
-    if Character ~= "back" then
-        Draw_player()
-        Attack_animation()
-    else
-        Attack_animation()
-        Draw_player()
-    end
-    -- Draw equipped sword
+    Draw_goblin()
+    Draw_health()
+    Draw_player()
     Draw_equipped_sword()
-    -- Draw hitboexes if triggered with button "k"
     Draw_hitboxes()
-    -- Draw dodge effect
     Draw_dodge_effect()
+    -- UI
     love.graphics.setColor(1, 1, 1)
     love.graphics.setFont(Font)
     love.graphics.print("Health: " .. math.max(player_entity.health, 0), 10, 10)
     love.graphics.print("Kills: " .. player_entity.kills, 10, 40)
-
-    if not Player_controls then
-        Draw_loss()
-    end
+    -- Draw wave information
     if NewWave then
         Draw_wave_no()
+    end
+    -- Draw end of game
+    if not Player_controls then
+        Draw_loss()
     end
 end
 

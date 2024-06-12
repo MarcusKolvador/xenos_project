@@ -63,7 +63,7 @@ function Attack_logic(dt)
             end
             if goblin_entity then
                 for _, goblin_entity in ipairs(Enemies) do
-                    if isColliding(sword_equipped_entity, goblin_entity) then
+                    if IsColliding(sword_equipped_entity, goblin_entity) then
                         goblin_entity.isDamaged = true
                         local GoblinHurtInstance = GoblinHurtSound:clone()
                         goblin_entity.health = goblin_entity.health - sword_equipped_entity.damage
@@ -148,7 +148,7 @@ function Attacking_hitbox_handler()
 end
 
 function Pick_up_sword()
-    if isColliding(player_entity, sword_entity) and Player_controls then
+    if IsColliding(player_entity, sword_entity) and Player_controls then
         Equipped_sword = true
     end
     if Equipped_sword then
@@ -159,7 +159,7 @@ end
 
 function Player_touches_goblin()
     for _, goblin_entity in ipairs(Enemies) do
-        if isColliding(player_entity, goblin_entity) then
+        if IsColliding(player_entity, goblin_entity) then
             player_entity.isDamaged = true
             if Player_controls then
                 Character_hurt:play()
@@ -183,7 +183,7 @@ function Player_touches_health()
     local remaining_drops = {}
 
     for _, health_entity in ipairs(Drops) do
-        if isColliding(player_entity, health_entity) then
+        if IsColliding(player_entity, health_entity) then
             -- player_entity.isDamaged = true <- make a healing effect?
             -- Character_hurt:play() <- heal sound?
             if player_entity.health < 100 then
@@ -220,7 +220,7 @@ function Draw_equipped_sword()
     end
 end
 
-function Draw_player()
+function Draw_avatar()
     local key = Character
     local frame = CurrentFrame
     if Attacking then
@@ -238,7 +238,7 @@ function Draw_player()
     end
 end
 
-function Attack_animation()
+function Draw_attack_animation()
     if Equipped_sword and Attacking then
         local key = "sword_attack_" .. Character
         if Character == "front" or Character == "back" then
@@ -273,5 +273,15 @@ function Draw_loss()
             local x = (love.graphics.getWidth() - text_width) / 2
             local y = (love.graphics.getHeight() - text_height) / 2
             love.graphics.print(text, x, y)
+end
+
+function Draw_player()
+    if Character ~= "back" then
+        Draw_avatar()
+        Draw_attack_animation()
+    else
+        Draw_attack_animation()
+        Draw_avatar()
+    end
 end
 
