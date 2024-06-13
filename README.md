@@ -1,54 +1,97 @@
-# LOVE VSCode Game Template
-A fully configured VSCode template for LOVE
+# Xenos Project v.1
+#### Video Demo:  [Watch here](https://www.youtube.com/watch?v=5o_Xc60hjsQ)
 
-## Features
-- 📄 Rich Lua language features with [Lua Language Server](https://github.com/LuaLS/lua-language-server)
-- 🔧 Debugging with [Local Lua Debugger](https://github.com/tomblind/local-lua-debugger-vscode)
-- 🏢 Automatic builds with [Makelove](https://github.com/pfirsich/makelove)
-- 👨‍💻 Consistent coding styles with [Editorconfig](https://github.com/editorconfig/editorconfig-vscode)
-- 🏃‍♂️ Running scripts with [NPM Scripts](https://docs.npmjs.com/cli/v9/using-npm/scripts)
-- 🗂️ Organized with [Workspaces](https://code.visualstudio.com/docs/editor/workspaces)
-- 🔗 Extensible and configurable for your needs
+#### Description:
+Xenos Project is a handcrafted, self-drawn 2D isometric arena-style game developed using Lua and the Love2D game engine. This game features a wave-based survival mode where players face increasingly challenging waves of enemies. The project leverages Keyslam's workspace template for organization and efficiency.
 
-## Prerequisites
-- [Visual Studio Code](https://code.visualstudio.com/download)
-- [LÖVE 11.4](https://love2d.org/)
-- [Makelove](https://github.com/pfirsich/makelove)
-- [NPM](https://nodejs.org/en/download) (Optional)
+The game structure is meticulously divided into separate files for ease of maintenance and readability. Each file has a clear purpose and follows a naming convention that ensures functions and variables are self-explanatory. This approach minimizes the need for excessive comments, promoting clean and elegant code. However, comments are used judiciously where necessary to enhance understanding.
 
-LÖVE and Makelove should be in your PATH environment variable.
+The `main.lua` file is designed to contain only a few local variables, with most global variables defined here. It delegates the bulk of the functionality to specific functions located in separate files. This modular approach facilitates easier maintenance, tweaking, debugging, and balancing by avoiding hardcoded numbers and instead using variables defined at the top of the scripts.
 
-## Setup
-1 - [Use this template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) to create a new repository for your game, then clone that repository locally.
+- **audio.lua**: This file loads all game audio in a single function, which is called during `love.load`. This centralized approach ensures all audio assets are managed consistently.
+- **images.lua**: Similar to `audio.lua`, this file handles the loading of all images, including logic for sprite frame loading.
+- **player_behavior.lua**: Manages all player-related functions, such as movement, attacks, sprite updates based on player status, and interactions with other entities.
+- **goblin_behavior.lua**: Handles goblin-related functions, including respawning and item drops.
+- **misc.lua**: Manages miscellaneous logic, such as drawing hitboxes on keypress, handling game boundaries, applying damage effects, managing enemy waves, collision detection, and drawing non-player/enemy sprites.
 
-2 - Open the `Workspace.code-workspace` file with Visual Studio Code.
-You will be prompted that there are recommended extensions and if you want to install these. Click 'Install'.
+Enemies and drops are organized into tables and iterated upon within functions, treating each as a separate entity even though they share the same spawning code. Significant effort has been invested in making the code aesthetic, modular, and tidy, paving the way for future modifications and additions.
 
-3 - Configure the `Game/conf.lua` and `Tools/build/makelove.toml` with the settings specific for your game.
+#### Gameplay:
+Controls:
+- **WASD**: Movement
+- **Mouse Click**: Attack
+- **Space**: Dodge (with cooldown)
+- **K**: Enter debug mode (currently displays hitboxes)
 
-4 - Configure the `Root/.editorconfig` to your liking for code styles.
+The game features endless waves of enemies, with the number and spawn rate tied to the wave number. Each wave's start is displayed on-screen, challenging players to survive and defeat as many enemies as possible. The dodge mechanic adds a strategic element, allowing players to escape danger or engage aggressively, but it comes with a cooldown and a visual indicator (an anime-esque drop of sweat on the character's head).
 
-5 - Change the `Root/LICENSE` file to a swap out my name for your name, or change it to a license of your liking. 
+#### Installation:
+To install and run the Xenos Project, follow these steps:
 
-## Running
-Press `F5` to launch the game in 'Debug mode'. In debug mode you can use breakpoints and inspect variables. This does have some performance impact though.\
-You can switch to 'Release mode' in the 'Run and Debug' tab (`Ctrl+Shift+D`).\
-Alternatively, you can run `lovec game` in the terminal.
+1. **Prerequisites**:
+   - Ensure you have [Love2D](https://love2d.org/) installed on your system.
 
-## Structure
-```
-├── /Game
-│   ├── /assets         Contains the game's assets
-│   ├── /lib            Contains external libraries
-│   └── /src            Contains the game's source code
-│
-├── Tools
-│   ├── /build          Contains the makelove.toml
-│   └── package.json    Contains all scripts to use with NPM Scripts
-│
-├── Resources           Contains resources for you game that should not be shipped, like raw audio
-│
-├── Builds              Contains the builds of your game made with makelove
-│
-└── Root                Root access to the workspace
-```
+2. **Steps**:
+   1. Clone the repository:
+      ```bash
+      git clone https://github.com/yourusername/xenos-project.git
+      ```
+   2. Navigate to the project directory:
+      ```bash
+      cd xenos-project
+      ```
+   3. Run the game using Love2D:
+      ```bash
+      love game
+      ```
+Alternatively, executables are located within the /game/makelove-build folder
+
+#### Configuration:
+Configuration settings are minimal and primarily handled through variables defined at the top of each script. These settings allow for easy adjustment of game parameters such as player speed, enemy spawn rates, and audio volume.
+
+#### Contributing:
+We welcome contributions from the community. If you wish to contribute, please follow these guidelines:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/your-feature`).
+5. Open a pull request.
+
+Please adhere to the coding standards and conventions outlined in the repository.
+
+#### License:
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+#### Authors and Acknowledgements:
+- **Kacper Kubiak** - Developer
+- **Special Thanks**:
+  - Jay, for the countless hours spent together in the world we built and the tears we shed.
+  - Keyslam, for the invaluable workspace template and support.
+
+#### FAQ:
+**Q: What inspired the Xenos Project?**
+A: The project was inspired by a fantasy-esque text-based role-play and will further be developed as a side hobby. The original version started as a CS50 final project.
+
+**Q: Where can I find the assets used in the game?**
+A: The audio assets are sourced from Pixabay, and the sprites are self-drawn using Piskelapp.
+
+**Q: How can I get help or support?**
+A: For support, please contact us at [marcuskolvador@gmail.com](mailto:marcuskolvador@gmail.com).
+
+#### Extra Info:
+Xenos Project is a passion project that will continue to evolve as a side hobby beyond its current scope. The game uses open-source audio from Pixabay.com and self-drawn sprites created with Piskelapp.com. The project's structure and environment are based on Keyslam's VSCode Game Template.
+
+#### Roadmap:
+Future development plans include:
+- Introducing new enemy types with unique behaviors.
+- Adding power-ups and special abilities for the player.
+- Implementing a scoring system and leaderboards.
+- Enhancing graphics and sound effects for a more immersive experience.
+
+Stay tuned for updates and new features as the project progresses.
+
+#### Changelog:
+### [Version 1.0] - 2024-12-06
+- Initial release with basic gameplay mechanics, including movement, attacks, dodging, and wave-based enemy spawning.
+- Debug mode with hitbox display.
